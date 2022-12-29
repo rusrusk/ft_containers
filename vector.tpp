@@ -7,9 +7,10 @@ namespace ft
 	template <typename T, typename Alloc>
 	ft::Vector<T, Alloc>::Vector(const allocator_type &alloc)
 			:	_size(0),
+				_capacity(0),
 				_alloc(alloc),
 				_first(NULL),
-				_last(NULL)	
+				_last(NULL)
 	{
 		if (M_DEBUG)
 			std::cout << "[VECTOR] Default Constructor has been invoked" << std::endl;
@@ -20,12 +21,14 @@ namespace ft
 	template <typename T, typename Alloc>
 	ft::Vector<T, Alloc>::Vector(size_type n, const value_type &val, const allocator_type &alloc) 
 			:	_size(0),
+				_capacity(0),
 				_alloc(alloc),
 				_first(NULL),
-				_last(NULL)	
+				_last(NULL)
 	{
 		(void)n;
 		(void)val;
+
 		if (M_DEBUG)
 			std::cout << "[VECTOR] Filled constructor has been invoked";;
 	}
@@ -36,6 +39,7 @@ namespace ft
 	template <typename InputIterator>
 	ft::Vector<T, Alloc>::Vector(InputIterator first, InputIterator last, const allocator_type &alloc) 
 			:	_size(0),
+				_capacity(0),
 				_alloc(alloc),
 				_first(NULL),
 				_last(NULL)	

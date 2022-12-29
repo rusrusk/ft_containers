@@ -2,12 +2,33 @@
 #include <vector>
 #include "vector.hpp"
 
+template <typename T>
+
+class Vector {
+	T* _begin;
+	T* _end;
+	T* _buffer_end;
+
+	size_t size() const noexcept {
+		return _end - _begin;
+	}
+	size_t capacity() const noexcept {
+		return _buffer_end - _begin;
+	}
+
+	Vector(size_t count, const T& value = T()) {
+		_begin(  )
+	}
+
+
+	 
+}
+
+
+
 
 int main () {
 
-	ft::Vector<int> vec;
-	// std::cout << vec << std::endl;
-	return 0;
 }
 
 
@@ -19,35 +40,29 @@ int main () {
 
 
 
+// int g(int *p) {
+// 	if (!*p) {
+// 		throw std::runtime_error("Fail");
+// 	}
+// 	return 3;
+// }
 
+// struct Something {
+// 	int *p;
+// 	Something(int *p): p(p) {}
+// 	~Something() {delete p; }
+// };
 
-
+// int f(int x) {
+// 	Something p(new int(x));
+// 	int res = g(p.p);
+// 	return res;
+// }
 
 
 // int main () {
-// 	Vector vec(11, 5);
-// 	std::cout << vec << std::endl;
-// 	vec.pushToBack(999);
-// 	std::cout << vec << std::endl;
-// 	vec.pushToBack(200);
-// 	std::cout << vec << std::endl;
 
-
-
-// 	Vector wec(vec);
-// 	std::cout << vec << std::endl;
-// 	vec.pushToBack(999);
-// 	std::cout << vec << std::endl;
-// 	vec.pushToBack(200);
-// 	std::cout << vec << std::endl;
-// 	// int arr[5] = {1, 2, 3, 4,5};
-// 	// std::vector<int> wec (&arr[0], &arr[5]);
-
-// 	// std::cout << wec[0] << std::endl;
-
-	
-// 	// wec.pushToBack(100);
-// 	// std::cout << wec << std::endl;
-// 	// wec.pushToBack(200);
-// 	// std::cout << wec << std::endl;
+// 	int res = f(5);
+// 	std::cout << res << std::endl;
 // }
+
