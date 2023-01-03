@@ -70,16 +70,6 @@ namespace ft
 			return (tmp);
 		}
 
-		//--------------COMPARISON OVERLOAD OPERATORS---------------//
-		template<class I>
-		bool operator==(const RandomAccessIterator<I> &it) const {
-			return _pointer == it.base();
-		}
-
-		template<class I>
-		bool operator!=(const RandomAccessIterator<I> &it) const {
-			return _pointer != it.base();
-		}
 
 		//--------------ARITHMETIC OPERATORS---------------//
 		RandomAccessIterator operator+(difference_type n) const {
@@ -89,8 +79,52 @@ namespace ft
 		RandomAccessIterator operator-(difference_type n) const {
 			return _pointer - n;
 		}
-				
+
+		//ptrdiff_t operator-()
+
+		//--------------REFERENCE AND DEREFERENCE OPERATORS---------------//
+		pointer operator->() const {
+			return _pointer;
+		}
+
+		reference operator*() const {
+			return *_pointer;
+		}
+
+
+
 	};
+		//--------------EQUALITY AND INEQUALITY COMPARISON OVERLOAD OPERATORS---------------//
+		template<typename IterLhs, typename IterRhs>
+		bool operator==(const RandomAccessIterator<IterLhs> &lhs, const RandomAccessIterator<IterRhs> &rhs) {
+			return lhs.base() == rhs.base();
+		}
+
+		template<class IterLhs, typename IterRhs>
+		bool operator!=(const RandomAccessIterator<IterLhs> &lhs, const RandomAccessIterator<IterRhs> &rhs) {
+			return lhs.base() != rhs.base();
+		}
+
+		//--------------RELATIONAL OPERATORS---------------//
+		template<typename IterLhs, typename IterRhs>
+		bool operator>(const RandomAccessIterator<IterLhs> &lhs, const RandomAccessIterator<IterRhs> &rhs) {
+			return lhs.base() > rhs.base();
+		}
+
+		template <typename IterLhs, typename IterRhs>
+		bool operator<(const RandomAccessIterator<IterLhs> &lhs, const RandomAccessIterator<IterRhs> &rhs) {
+			return lhs.base() < rhs.base();
+		}
+
+		template <typename IterLhs, typename IterRhs>
+		bool operator>=(const RandomAccessIterator<IterLhs> &lhs, const RandomAccessIterator<IterRhs> &rhs) {
+			return lhs.base() >= rhs.base();
+		}
+
+		template<typename IterLhs, typename IterRhs>
+		bool operator<=(const RandomAccessIterator<IterLhs> &lhs, const RandomAccessIterator<IterRhs> &rhs) {
+			return lhs.base() <= rhs.base();
+		}
 
 }
 

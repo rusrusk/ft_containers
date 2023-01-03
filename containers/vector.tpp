@@ -8,9 +8,8 @@ namespace ft
 	ft::Vector<T, Alloc>::Vector(const allocator_type &alloc)
 			:	_size(0),
 				_capacity(0),
-				_alloc(alloc),
-				_first(NULL),
-				_last(NULL)
+				_allocator(alloc),
+				_pointer(NULL)
 	{
 		if (M_DEBUG)
 			std::cout << "[VECTOR] Default Constructor has been invoked" << std::endl;
@@ -22,9 +21,8 @@ namespace ft
 	ft::Vector<T, Alloc>::Vector(size_type n, const value_type &val, const allocator_type &alloc) 
 			:	_size(0),
 				_capacity(0),
-				_alloc(alloc),
-				_first(NULL),
-				_last(NULL)
+				_allocator(alloc),
+				_pointer(NULL)
 	{
 		(void)n;
 		(void)val;
@@ -40,20 +38,21 @@ namespace ft
 	ft::Vector<T, Alloc>::Vector(InputIterator first, InputIterator last, const allocator_type &alloc) 
 			:	_size(0),
 				_capacity(0),
-				_alloc(alloc),
-				_first(NULL),
-				_last(NULL)	
+				_allocator(alloc),
+				_pointer(NULL)	
 	{
-		(void)first;
-		(void)last;
 		if (M_DEBUG)
 			std::cout << "[VECTOR] Range constructor has been invoked";
 	}
-}
-
 	//------------------Destructor------------------//
 	template <typename T, typename Alloc>
 	ft::Vector<T, Alloc>::~Vector() {
 		if (M_DEBUG)
 			std::cout << "[VECTOR] Destructor has been invoked";
 	}
+
+	// template<typename T, typename Alloc>
+	
+}
+
+

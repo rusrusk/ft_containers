@@ -9,10 +9,11 @@
 #include <vector>
 #include <memory>
 #include <iterator>
+#include "../iterators/ft_random_access_iterator.hpp"
 
 namespace ft
 {
-	template <typename T, typename Alloc = std::allocator<T> >
+	template <class T, class Alloc = std::allocator<T> >
 		class Vector {
 			
 			////////////////////~~~~~~~~~~	PUBLIC MEMBERS ~~~~~~~~~~////////////////////
@@ -37,9 +38,8 @@ namespace ft
 			private:
 					size_type				_size;
 					size_type				_capacity;
-					allocator_type			_alloc;
-					pointer					_first;
-					pointer					_last;
+					allocator_type			_allocator;
+					pointer					_pointer;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
