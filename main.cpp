@@ -1,34 +1,12 @@
 #include <iostream>
 #include <vector>
-#include "vector.hpp"
-
-template <typename T>
-
-class Vector {
-	T* _begin;
-	T* _end;
-	T* _buffer_end;
-
-	size_t size() const noexcept {
-		return _end - _begin;
-	}
-	size_t capacity() const noexcept {
-		return _buffer_end - _begin;
-	}
-
-	Vector(size_t count, const T& value = T()) {
-		_begin(  )
-	}
-
-
-	 
-}
+#include "iterators/ft_random_access_iterator.hpp"
 
 
 
 
 int main () {
-
+	return 0;
 }
 
 
