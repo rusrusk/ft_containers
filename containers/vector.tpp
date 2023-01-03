@@ -51,6 +51,7 @@ namespace ft
 			std::cout << "[VECTOR] Destructor has been invoked";
 	}
 
+	template <typename T, typename Alloc>
 	
 	
 }
