@@ -70,11 +70,16 @@ namespace ft
 	//////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::iterator ft::Vector<T, Alloc>::begin() {
+		if (M_DEBUG)
+			std::cout << "begin() has been invoked" << std::endl;
 		return iterator(_start);
+
 	}
 
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::const_iterator ft::Vector<T, Alloc>::begin() const {
+		if (M_DEBUG)
+			std::cout << "begin() const has been invoked" << std::endl;
 		return const_iterator (_start);
 	}
 
@@ -83,11 +88,15 @@ namespace ft
 	//////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::iterator ft::Vector<T, Alloc>::end() {
+		if (M_DEBUG)
+			std::cout << "end() has been invoked" << std::endl;
 		return iterator(_end);
 	}
 
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::const_iterator ft::Vector<T, Alloc>::end() const {
+		if (M_DEBUG)
+			std::cout << "end() const has been invoked" << std::endl;
 		return const_iterator (_end);
 	}
 
@@ -96,11 +105,15 @@ namespace ft
 	//////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::reverse_iterator ft::Vector<T, Alloc>::rbegin() {
+		if (M_DEBUG)
+			std::cout << "rbegin() has been invoked" << std::endl;
 		return reverse_iterator(_end - 1);
 	}
 
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::const_reverse_iterator ft::Vector<T, Alloc>::rbegin() const {
+		if (M_DEBUG)
+			std::cout << "rbegin() const has been invoked" << std::endl;
 		return const_reverse_iterator(_end - 1);
 	}
 
@@ -109,11 +122,15 @@ namespace ft
 	//////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::reverse_iterator ft::Vector<T, Alloc>::rend() {
+		if (M_DEBUG)
+			std::cout << "rend() has been invoked" << std::endl;
 		return reverse_iterator(_end - 1);
 	}
 
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::const_reverse_iterator ft::Vector<T, Alloc>::rend() const {
+		if (M_DEBUG)
+			std::cout << "rend() const has been invoked" << std::endl;
 		return const_reverse_iterator (_end - 1);
 	}
 
@@ -126,13 +143,15 @@ namespace ft
 	//////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::reference   ft::Vector<T, Alloc>::operator[](size_type n) {
-		return (*(_start + n));
 	if (M_DEBUG)
 			std::cout << "[VECTOR] operator[] has been invoked";
+		return (*(_start + n));
 	}
 
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::const_reference ft::Vector<T, Alloc>::operator[](size_type n) const {
+		if (M_DEBUG)
+			std::cout << "operator[] has been invoked" << std::endl;
 		return (*(_start + n));
 	}
 
@@ -144,6 +163,8 @@ namespace ft
 		if (n >= _size) {
 			std::out_of_range("can't access element at() outside of the vector range");
 		}
+		if (M_DEBUG)
+			std::cout << "at() has been invoked" << std::endl;
 		return (*(_start + n));
 	}
 
@@ -152,6 +173,8 @@ namespace ft
 		if (n >= _size) {
 			std::out_of_range("can't access element at() outside of the vector range");
 		}
+		if (M_DEBUG)
+			std::cout << "at() const has been invoked" << std::endl;
 		return (*(_start + n));
 	}
 
@@ -164,6 +187,8 @@ namespace ft
 			std::out_of_range("can't call empty container with front()");
 		if (!_start)
 			std::out_of_range("can't call empty container with front()");
+		if (M_DEBUG)
+			std::cout << "front() has been invoked" << std::endl;
 		return (*_start);
 	}
 
@@ -173,6 +198,8 @@ namespace ft
 			std::out_of_range("can't call empty container with front()");
 		if (!_start)
 			std::out_of_range("can't call empty container with front()");
+		if (M_DEBUG)
+			std::cout << "front() const has been invoked" << std::endl;
 		return (*_start);
 	}
 
@@ -185,6 +212,8 @@ namespace ft
 			std::out_of_range("can't call back() if size == 0");
 		if (!_end)
 			std::out_of_range("can't call back() if the container is empty");
+		if (M_DEBUG)
+			std::cout << "back() has been invoked" << std::endl;
 		return (*(_end - 1));
 	}
 
@@ -194,6 +223,8 @@ namespace ft
 			std::out_of_range("ca't call back() if size == 0");
 		if (!_end)
 			std::out_of_range("can't call back() if the container is empty");
+		if (M_DEBUG)
+			std::cout << "back() const has been invoked" << std::endl;
 		return (*(_end - 1));
 	}
 
@@ -202,11 +233,15 @@ namespace ft
 	//////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::value_type* ft::Vector<T, Alloc>::data() {
+		if (M_DEBUG)
+			std::cout << "data() has been invoked" << std::endl;
 		return (*_start);
 	}
 
 	template <typename T, typename Alloc>
 	const typename ft::Vector<T, Alloc>::value_type* ft::Vector<T, Alloc>::data() const {
+		if (M_DEBUG)
+			std::cout << "data() const has been invoked" << std::endl;
 		return (*_start);
 	}
 
@@ -219,6 +254,8 @@ namespace ft
 	//////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::size_type ft::Vector<T, Alloc>::size() const {
+		if (M_DEBUG)
+			std::cout << "size() const has been invoked" << std::endl;
 		return (_end - _start);
 	}
 
@@ -227,18 +264,20 @@ namespace ft
 	//////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::size_type ft::Vector<T, Alloc>::max_size() const {
+		if (M_DEBUG)
+			std::cout << "max_size() const has been invoked" << std::endl;
 		return (allocator_type().max_size());
 	}
 
 	//////////////////////////////////////////////
 	//resize//////////////////////////////////////
 	//////////////////////////////////////////////
-	template <typename T, typename Alloc>
-	void ft::Vector<T, Alloc>::resize(size_type n, value_type value) {
-		if (n < size()) {
-			if ()
-		}
-	}
+	// template <typename T, typename Alloc>
+	// void ft::Vector<T, Alloc>::resize(size_type n, value_type value) {
+	// 	if (n < size()) {
+	// 		value = 
+	// 	}
+	// }
 }
 
 

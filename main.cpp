@@ -27,6 +27,10 @@ int main () {
 
 	std::cout << std::string(30, 32) << COLOR_BOLD_RED << std::string(25, 32) << "CONSTRUCTORS" << END << std::endl;
 	ft::Vector<size_t> vec(10, 4);
+	for (unsigned long i = 0; i < vec.size(); i++) {
+		std::cout << vec[i] << std::endl;
+	}
+	std::cout << vec.size() << std::endl;
 
 }
 
