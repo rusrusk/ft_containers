@@ -7,10 +7,10 @@
 
 namespace ft
 {
-	template <class Iterator>
+	template <class IteratorType>
 	class RandomAccessIterator {
 	public :
-		typedef Iterator	iterator_type;
+		typedef				IteratorType										iterator_type;
 		typedef typename	ft::random_access_iterator_tag						iterator_category;
 		typedef typename	ft::iterator_traits<iterator_type>::value_type		value_type;
 		typedef typename	ft::iterator_traits<iterator_type>::difference_type	difference_type;

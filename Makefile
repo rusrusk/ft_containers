@@ -15,19 +15,19 @@ DFLAGS	=	-g -D M_DEBUG=1
 all : $(NAME)
 
 $(NAME) : $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@
+	@$(CC) $(CFLAGS) $^ -o $@
 
-# %.o : %.cpp
-# 	$(CC) $(CFLAGS) -c $< -o $@
+%.o : %.cpp
+	@$(CC) $(CFLAGS) -c $^ -o $@
 
 debug :
 	$(CC) $(CFLAGS) $(DFLAGS) $(SRCS) -o $(NAME)
 
 clean :
-	$(RM) $(OBJS)
+	@$(RM) $(OBJS)
 
 fclean : clean
-	$(RM) $(NAME)
+	@$(RM) $(NAME)
 
 re : fclean all
 
