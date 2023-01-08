@@ -26,37 +26,48 @@ namespace ft
 				_start(NULL),
 				_end(NULL)
 	{
-		for (int i = 0; i < n; i++)
-			_allocator.construct(_start + i, val);
-
 		if (M_DEBUG)
-			std::cout << "[VECTOR] Filled constructor has been invoked";
+			std::cout << "[VECTOR] Filled constructor has been invoked" << std::endl;
+		// pointer tmp = _start;
+		_start = _allocator.allocate(n);
+		_end = _start + n;
+		for (unsigned long i = 0; i < n; i++)
+		{
+			_allocator.construct(_start + i, val);
+		}
 	}
 
 	//------------------Range constructor------------------//
 	//constructs container with as many elems as range [first,last] with each elem constructed from its elem in that range
 	template <typename T, typename Alloc>
 	template <typename InputIterator>
-	ft::Vector<T, Alloc>::Vector(InputIterator first, InputIterator last, const allocator_type &alloc) 
+	ft::Vector<T, Alloc>::Vector(InputIterator first, InputIterator last, const allocator_type &alloc, typename ft::enable_if<!std::is_integral<InputIterator>::value>::type*) 
 			:	_size(0),
 				_capacity(0),
 				_allocator(alloc),
 				_start(NULL),
 				_end(NULL)
 	{
-		(void)first;
-		(void)last;
 		if (M_DEBUG)
-			std::cout << "[VECTOR] Range constructor has been invoked";
+			std::cout << "[VECTOR] Range constructor has been invoked" << std::endl;
+		_start = _allocator.allocate(last.base() - first.base());
+		_end = _start;
+		while (first != last)
+		{
+			_allocator.construct(_end, *first);
+			_end++;
+			first++;
+		}
+		
 	}
 	//------------------Destructor------------------//
 	template <typename T, typename Alloc>
 	ft::Vector<T, Alloc>::~Vector() {
 		if (M_DEBUG)
-			std::cout << "[VECTOR] Destructor has been invoked";
+			std::cout << "[VECTOR] Destructor has been invoked" << std::endl;
 	}
 
-	//------------------Copy Constructor------------------//
+	// ------------------Copy Constructor------------------//
 	// template <typename T, typename Alloc>
 	// ft::vector::
 	
@@ -144,7 +155,7 @@ namespace ft
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::reference   ft::Vector<T, Alloc>::operator[](size_type n) {
 	if (M_DEBUG)
-			std::cout << "[VECTOR] operator[] has been invoked";
+			std::cout << "[VECTOR] operator[] has been invoked" << std::endl;
 		return (*(_start + n));
 	}
 
@@ -278,6 +289,63 @@ namespace ft
 	// 		value = 
 	// 	}
 	// }
+
+	//////////////////////////////////////////////
+	//empty//////////////////////////////////////
+	//////////////////////////////////////////////
+	template <typename T, typename Alloc>
+	bool ft::Vector<T, Alloc>::empty() const {
+		return _size = 0; 
+	}
+
+	//////////////////////////////////////////////
+	//capacity////////////////////////////////////
+	//////////////////////////////////////////////
+	template <typename T, typename Alloc>
+	typename ft::Vector<T, Alloc>::size_type ft::Vector<T, Alloc>::capacity() const {
+		return (_capacity);
+	}
+
+	/////////////////////////////////////////////
+	//reserve////////////////////////////////////
+	/////////////////////////////////////////////
+	// template <typename T, typename Alloc>
+	// typename ft::Vector<T, Alloc>::
+		
+
+
+	
+	//////////////////////////////////////////////////////
+	//					MODIFIERS						//
+	/////////////////////////////////////////////////////
+
+	/////////////////////////////////////////////
+	//assign/////////////////////////////////////
+	/////////////////////////////////////////////
+	template <typename T, typename Alloc>
+	void ft::Vector<T, Alloc>::assign(size_type n, const value_type &val) {
+		if (n > max_size())
+			throw std::length_error("EXCEPTION : assign() size is bigger than max_size()");
+		clear();
+		if (n > _capacity)
+		{
+			_allocator.deallocate(_start, _capacity);
+			
+		}
+	}
+
+	/////////////////////////////////////////////
+	//clear//////////////////////////////////////
+	/////////////////////////////////////////////
+	template <typename T, typename Alloc>
+	void ft::Vector<T, Alloc>::clear() {
+		size_type ssize = size();
+		for (size_type i = 0; i < ssize; i++)
+		{
+			_allocator.destroy(_end);
+			--_end;
+		}
+	}
 }
 
 

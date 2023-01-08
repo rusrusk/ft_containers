@@ -11,6 +11,7 @@
 #include <iterator>
 #include "../iterators/ft_random_access_iterator.hpp"
 #include "../iterators/ft_reverse_iterator.hpp"
+#include "../iterators/ft_utils.hpp"
 
 namespace ft
 {
@@ -58,7 +59,7 @@ namespace ft
 		//------------------Fill constructor------------------//
 		explicit Vector(size_type n, const value_type &val = value_type(), const allocator_type &alloc = allocator_type());
 		//------------------Range constructor------------------//
-		template <class InputIterator> Vector (InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type());
+		template <class InputIterator> Vector (InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type(), typename ft::enable_if<!std::is_integral<InputIterator>::value>::type* = NULL);
 		//------------------Default destructor------------------//
 		~Vector();		
 		//------------------Copy constructor------------------//
@@ -189,8 +190,8 @@ namespace ft
 		void clear();
 
 	};
-}
 
+}
 #include "vector.tpp"
 
 #endif
