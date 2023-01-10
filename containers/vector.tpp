@@ -58,7 +58,6 @@ namespace ft
 			_end++;
 			first++;
 		}
-		
 	}
 	//------------------Destructor------------------//
 	template <typename T, typename Alloc>
@@ -68,8 +67,31 @@ namespace ft
 	}
 
 	// ------------------Copy Constructor------------------//
-	// template <typename T, typename Alloc>
-	// ft::vector::
+	template <typename T, typename Alloc>
+	ft::Vector<T, Alloc>::Vector(const Vector &x, const allocator_type &alloc)
+			:	_size(0),  
+				_start(NULL),
+				_end(NULL),
+				_allocator(alloc),
+				_capacity(0)
+	{
+		if (M_DEBUG)
+			std::cout << "[VECTOR] Copy constructor has been invoked" << std::endl;
+		assign(x.begin(), x.end());
+	}
+
+	// ------------------Operator= Overloading------------------//
+	template <typename T, typename Alloc>
+	ft::Vector<T, Alloc> & ft::Vector<T, Alloc>::operator=(const Vector &rhs) {
+		clear();
+		if (_start)
+			_allocator.deallocate(_start, size());
+		_start = NULL;
+		_end = NULL;
+		_capacity = 0;
+		assign(rhs.begin(), rhs.end());
+		return (*this);
+	}
 	
 
 	/////////////////////////////////////////////////////////
@@ -77,7 +99,7 @@ namespace ft
 	////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////
-	//begin///////////////////////////////////////
+	//begin --> pointer to 1st element///////////////////////////////////////
 	//////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::iterator ft::Vector<T, Alloc>::begin() {
@@ -95,7 +117,7 @@ namespace ft
 	}
 
 	//////////////////////////////////////////////
-	//end/////////////////////////////////////////
+	//end --> pointer to last + 1 element/////////////////////////////////////////
 	//////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::iterator ft::Vector<T, Alloc>::end() {
@@ -172,7 +194,7 @@ namespace ft
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::reference ft::Vector<T, Alloc>::at(size_type n) {
 		if (n >= _size) {
-			std::out_of_range("can't access element at() outside of the vector range");
+			std::out_of_range("index is out of range in at()");
 		}
 		if (M_DEBUG)
 			std::cout << "at() has been invoked" << std::endl;
@@ -182,7 +204,7 @@ namespace ft
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::const_reference ft::Vector<T, Alloc>::at(size_type n) const {
 		if (n >= _size) {
-			std::out_of_range("can't access element at() outside of the vector range");
+			std::out_of_range("index is out of range in at()");
 		}
 		if (M_DEBUG)
 			std::cout << "at() const has been invoked" << std::endl;
@@ -190,7 +212,7 @@ namespace ft
 	}
 
 	//////////////////////////////////////////////
-	//front////////////////////////////////////////
+	//front --> first element////////////////////////////////////////
 	//////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::reference ft::Vector<T, Alloc>::front() {
@@ -215,7 +237,7 @@ namespace ft
 	}
 
 	//////////////////////////////////////////////
-	//back////////////////////////////////////////
+	//back --> last element////////////////////////////////////////
 	//////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::reference ft::Vector<T, Alloc>::back() {
@@ -260,9 +282,9 @@ namespace ft
 	//					CAPACITY						//
 	/////////////////////////////////////////////////////
 
-	//////////////////////////////////////////////
-	//size////////////////////////////////////////
-	//////////////////////////////////////////////
+	////////////////////////////////////////////////////////////
+	//size -->gives current number of elements//////////////////
+	////////////////////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::size_type ft::Vector<T, Alloc>::size() const {
 		if (M_DEBUG)
@@ -270,9 +292,9 @@ namespace ft
 		return (_end - _start);
 	}
 
-	//////////////////////////////////////////////
-	//max_size////////////////////////////////////
-	//////////////////////////////////////////////
+	/////////////////////////////////////////////////////
+	//max_size -->size of the largest possible vector////
+	/////////////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::size_type ft::Vector<T, Alloc>::max_size() const {
 		if (M_DEBUG)
@@ -280,38 +302,74 @@ namespace ft
 		return (allocator_type().max_size());
 	}
 
-	//////////////////////////////////////////////
-	//resize//////////////////////////////////////
-	//////////////////////////////////////////////
-	// template <typename T, typename Alloc>
-	// void ft::Vector<T, Alloc>::resize(size_type n, value_type value) {
-	// 	if (n < size()) {
-	// 		value = 
-	// 	}
-	// }
+	////////////////////////////////////////////////////
+	//resize --> added elements initialized by value////
+	////////////////////////////////////////////////////
+	template <typename T, typename Alloc>
+	void ft::Vector<T, Alloc>::resize(size_type n, value_type value) {
+		size_type prev_size = size();
+		if (n > max_size())
+			throw std::length_error("n more than max_size() in resize()");
+		if (n > prev_size)
+		{
+			if (n > 2 * _capacity)
+				reserve(n);
+			else if (n > _capacity)
+				reserve(2 * _capacity);
+			for (; prev_size < n; prev_size++)
+			{
+				_allocator.construct(_start + prev_size, value);
+			}
+			_end = _start + n;
+		}
+		if (n < prev_size) {
+			for (; n < prev_size; --_size)
+			{
+				_allocator(_start + prev_size - 1);
+			}
+		}
+	}
 
 	//////////////////////////////////////////////
 	//empty//////////////////////////////////////
 	//////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	bool ft::Vector<T, Alloc>::empty() const {
-		return _size = 0; 
+		return _size = 0;
 	}
 
-	//////////////////////////////////////////////
-	//capacity////////////////////////////////////
-	//////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////
+	//capacity --> size of the memory(in number of elements)allocated//////
+	///////////////////////////////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::Vector<T, Alloc>::size_type ft::Vector<T, Alloc>::capacity() const {
 		return (_capacity);
 	}
 
-	/////////////////////////////////////////////
-	//reserve////////////////////////////////////
-	/////////////////////////////////////////////
-	// template <typename T, typename Alloc>
-	// typename ft::Vector<T, Alloc>::
-		
+	////////////////////////////////////////////////////////////////////////
+	//reserve --> gives current number of reserved memory slots; dont initialize any elements!////////
+	///////////////////////////////////////////////////////////////////////
+	template <typename T, typename Alloc>
+	void ft::Vector<T, Alloc>::reserve(size_type n) {
+		size_type previous_size = size();
+		if (n > max_size())
+		{
+			throw std::length_error("n is bigger than max_size()");
+		}
+		if (n > _capacity)
+		{
+			pointer tmp = _allocator.allocate(n);
+			for (size_type i = 0; i < previous_size; i++)
+			{
+				_allocator.construct(tmp + i, *(_start + i));
+				_allocator.destroy(_start + i);
+			}
+			_allocator.deallocate(_start, _capacity);
+			_start = tmp;
+			_end = _start + previous_size;
+			_capacity = n;
+		}
+	}
 
 
 	
@@ -320,17 +378,42 @@ namespace ft
 	/////////////////////////////////////////////////////
 
 	/////////////////////////////////////////////
-	//assign/////////////////////////////////////
+	//assign --> n copies of val/////////////////
 	/////////////////////////////////////////////
 	template <typename T, typename Alloc>
-	void ft::Vector<T, Alloc>::assign(size_type n, const value_type &val) {
-		if (n > max_size())
+	void ft::Vector<T, Alloc>::assign(size_type new_size, const value_type &init_value) {
+		if (new_size > max_size())
 			throw std::length_error("EXCEPTION : assign() size is bigger than max_size()");
 		clear();
-		if (n > _capacity)
+		if (new_size > _capacity)
 		{
 			_allocator.deallocate(_start, _capacity);
-			
+			_start = _allocator.allocate(new_size);
+			_capacity = new_size;
+
+		}
+		while (new_size--)
+		{
+			_allocator.construct(_end, init_value);
+			_start++;	
+		}
+	}
+
+	/////////////////////////////////////////////
+	//assign -->copy from [first:last]///////////
+	/////////////////////////////////////////////
+	template <typename T, typename Alloc>
+	template <typename InputIterator>
+	void ft::Vector<T, Alloc>::assign(InputIterator first, InputIterator last) {
+		size_type new_size = last.base() - first.base();
+		if (new_size > max_size())
+			throw std::length_error("EXCEPTION : new_size is more than max_size()");
+		clear();
+		reserve(new_size);
+		while (first != last)
+		{
+			push_back(*first);
+			first++;
 		}
 	}
 
@@ -342,10 +425,51 @@ namespace ft
 		size_type ssize = size();
 		for (size_type i = 0; i < ssize; i++)
 		{
+			
 			_allocator.destroy(_end);
 			--_end;
 		}
 	}
+
+	/////////////////////////////////////////////
+	//push_back//////////////////////////////////
+	/////////////////////////////////////////////
+	template <typename T, typename Alloc>
+	void ft::Vector<T, Alloc>::push_back(const value_type &value) {
+		size_type prev_size = size();
+		if (prev_size + 1 > _capacity)
+		{
+			reserve(_capacity * 2);
+		}
+		_allocator.construct(_end, value);
+		_end++;
+	}
+
+	/////////////////////////////////////////////
+	//pop_back///////////////////////////////////
+	/////////////////////////////////////////////
+	template <typename T, typename Alloc>
+	void ft::Vector<T, Alloc>::pop_back() {
+		if (_end <= _start)
+			return ;
+		_allocator.destroy(_end);
+		--_end;
+	}
+
+	/////////////////////////////////////////////
+	//pop_back///////////////////////////////////
+	/////////////////////////////////////////////
+
+
+
+	/////////////////////////////////////////////
+	//get_allocator//////////////////////////////
+	/////////////////////////////////////////////
+	template <typename T, typename Alloc>
+	typename ft::Vector<T, Alloc>::allocator_type ft::Vector<T, Alloc>::get_allocator() const {
+		return (_allocator);
+	}
+
 }
 
 

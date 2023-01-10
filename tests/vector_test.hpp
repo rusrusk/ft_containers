@@ -7,7 +7,12 @@
 
 class VectorTest : Test {
 	private :
-			static 
+			static std::vector<int> test_assign_std() {
+				std::vector<int> vec;
+				std::vector<int> result;
+				vec.assign(9000 * 100, 1);
+				
+			}
 }
 
 

@@ -43,11 +43,11 @@ namespace ft
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 	template<class Iterator>
 	struct iterator_traits {
-		typedef typename Iterator::difference_type			difference_type;
-		typedef typename Iterator::value_type				value_type;
-		typedef typename Iterator::pointer					pointer;
-		typedef typename Iterator::reference				reference;
-		typedef typename Iterator::iterator_category		iterator_category;
+		typedef typename Iterator::difference_type			difference_type;		//diff between 2 iterators
+		typedef typename Iterator::value_type				value_type;				//type of element
+		typedef typename Iterator::pointer					pointer;				//return type of operator->()
+		typedef typename Iterator::reference				reference;				//return type of operator*()
+		typedef typename Iterator::iterator_category		iterator_category;		//indicatin what opers itr supports
 
 	};
 
@@ -58,8 +58,8 @@ namespace ft
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	template<typename T>
-	struct iterator_traits<T*> {
-		typedef		ptrdiff_t						difference_type;
+	struct iterator_traits<T*> {	//specializations for pointers
+		typedef		ptrdiff_t						difference_type;	//diff is reprsntd by stl type ptrdiff_t
 		typedef 	T								value_type;
 		typedef		T*								pointer;
 		typedef		T&								reference;

@@ -56,16 +56,16 @@ namespace ft
 	public:
 		//------------------Default constructor------------------//
 		explicit Vector(const allocator_type &alloc = allocator_type());			
-		//------------------Fill constructor------------------//
+		//------------------Fill constructor(n copies of val)------------------//
 		explicit Vector(size_type n, const value_type &val = value_type(), const allocator_type &alloc = allocator_type());
-		//------------------Range constructor------------------//
+		//------------------Range constructor(copy from [first:last])------------------//
 		template <class InputIterator> Vector (InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type(), typename ft::enable_if<!std::is_integral<InputIterator>::value>::type* = NULL);
 		//------------------Default destructor------------------//
 		~Vector();		
 		//------------------Copy constructor------------------//
-		Vector(const Vector &rhs);			
+		Vector(const Vector &rhs, const allocator_type &alloc = allocator_type());			
 		//------------------Copy assignment operator------------------//
-		Vector operator=(const Vector &rhs);
+		Vector &operator=(const Vector &rhs);
 
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,6 +189,10 @@ namespace ft
 		//------------------clear------------------//
 		void clear();
 
+
+
+		//------------------get_allocator------------------//
+		allocator_type get_allocator() const;
 	};
 
 }
