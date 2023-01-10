@@ -35,6 +35,13 @@ namespace ft
 		{
 			_allocator.construct(_start + i, val);
 		}
+		// size_type i = 0;
+		// reserve(n);
+		// while (i < n)
+		// {
+		// 	push_back(val);
+		// 	i++;
+		// }
 	}
 
 	//------------------Range constructor------------------//
@@ -390,12 +397,13 @@ namespace ft
 			_allocator.deallocate(_start, _capacity);
 			_start = _allocator.allocate(new_size);
 			_capacity = new_size;
+			_end = _start;
 
 		}
 		while (new_size--)
 		{
 			_allocator.construct(_end, init_value);
-			_start++;	
+			_end++;	
 		}
 	}
 
@@ -404,7 +412,7 @@ namespace ft
 	/////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	template <typename InputIterator>
-	void ft::Vector<T, Alloc>::assign(InputIterator first, InputIterator last) {
+	void ft::Vector<T, Alloc>::assign(InputIterator first, InputIterator last, typename ft::enable_if<!std::is_integral<InputIterator>::value>::type*) {
 		size_type new_size = last.base() - first.base();
 		if (new_size > max_size())
 			throw std::length_error("EXCEPTION : new_size is more than max_size()");
@@ -457,9 +465,12 @@ namespace ft
 	}
 
 	/////////////////////////////////////////////
-	//pop_back///////////////////////////////////
+	//insert/////////////////////////////////////
 	/////////////////////////////////////////////
-
+	// template <typename T, typename Alloc>
+	// typename ft::Vector<T, Alloc>::iterator ft::Vector<T, Alloc>::insert(iterator position, const value_type &value) {
+		
+	// }
 
 
 	/////////////////////////////////////////////

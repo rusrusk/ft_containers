@@ -27,7 +27,7 @@ class Test {
 					std::cout << *it << '|';
 				}
 				std::cout << "ft:";
-				for (std::vector<int>::iterator itr = std_result.begin(); itr != std_result.end(); itr++) {
+				for (std::vector<int>::iterator itr = ft_result.begin(); itr != ft_result.end(); itr++) {
 					std::cout << *itr << '|';
 				}
 

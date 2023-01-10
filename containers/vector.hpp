@@ -160,8 +160,7 @@ namespace ft
 
 		//------------------assign------------------//
 		//range
-		template <class InputIterator> void assign(InputIterator first, InputIterator last);
-		//fill
+		template <class InputIterator> void assign(InputIterator first, InputIterator last, typename ft::enable_if<!std::is_integral<InputIterator>::value>::type* = NULL);		//fill
 		void assign(size_type n, const value_type &val);
 
 		//------------------push_back------------------//
