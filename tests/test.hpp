@@ -26,7 +26,7 @@ class Test {
 				for (std::vector<int>::iterator it = std_result.begin(); it != std_result.end(); it++) {
 					std::cout << *it << '|';
 				}
-				std::cout << "ft:";
+				std::cout << std::endl << "ft :";
 				for (std::vector<int>::iterator itr = ft_result.begin(); itr != ft_result.end(); itr++) {
 					std::cout << *itr << '|';
 				}
@@ -46,6 +46,7 @@ class Test {
 				get_time_result();
 				std::cout << "<std> time " << std::setw(4) << end - start;
 				std::cout << "| result comparisation: " << (ft_result == std_result ? "✅ " : "❌ ") << std::endl;
+				render_all_results(std_result, ft_result);
 			}
 
 	public :
