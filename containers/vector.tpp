@@ -28,14 +28,14 @@ namespace ft
 	{
 		if (M_DEBUG)
 			std::cout << "[VECTOR] Filled constructor has been invoked" << std::endl;
-		// assign(n, val);
-		_start = _allocator.allocate(n);
-		_end = _start + n;
-		for (unsigned long i = 0; i < n; i++)
-		{
-			_allocator.construct(_start + i, val);
-		}
-		_capacity = n;
+		assign(n, val);
+		// _start = _allocator.allocate(n);
+		// _end = _start;
+		// while (n--)
+		// {
+		// 	_allocator.construct(_end, val);
+		// 	_end++;
+		// }
 	}
 
 	//------------------Range constructor------------------//
@@ -61,6 +61,7 @@ namespace ft
 		// }
 
 		assign(first, last);
+		
 
 	}
 	//------------------Destructor------------------//
@@ -75,7 +76,7 @@ namespace ft
 	// ------------------Copy Constructor------------------//
 	template <typename T, typename Alloc>
 	ft::vector<T, Alloc>::vector(const vector &x, const allocator_type &alloc)
-			:	 
+			:
 				_capacity(0),
 				_allocator(alloc),
 				_start(NULL),
@@ -86,15 +87,14 @@ namespace ft
 		assign(x.begin(), x.end());
 	}
 
+
+
 	// ------------------Operator= Overloading------------------//
 	template <typename T, typename Alloc>
 	ft::vector<T, Alloc> & ft::vector<T, Alloc>::operator=(const vector &rhs) {
-		clear();
-		if (_start)
-			_allocator.deallocate(_start, size());
-		_start = NULL;
-		_end = NULL;
-		_capacity = 0;
+		if (this == &rhs)
+			return *this;
+		set_empty();
 		assign(rhs.begin(), rhs.end());
 		return (*this);
 	}
@@ -112,7 +112,6 @@ namespace ft
 		if (M_DEBUG)
 			std::cout << "begin() has been invoked" << std::endl;
 		return iterator(_start);
-
 	}
 
 	template <typename T, typename Alloc>
@@ -146,14 +145,14 @@ namespace ft
 	typename ft::vector<T, Alloc>::reverse_iterator ft::vector<T, Alloc>::rbegin() {
 		if (M_DEBUG)
 			std::cout << "rbegin() has been invoked" << std::endl;
-		return reverse_iterator(_end - 1);
+		return reverse_iterator(_end);
 	}
 
 	template <typename T, typename Alloc>
 	typename ft::vector<T, Alloc>::const_reverse_iterator ft::vector<T, Alloc>::rbegin() const {
 		if (M_DEBUG)
 			std::cout << "rbegin() const has been invoked" << std::endl;
-		return const_reverse_iterator(_end - 1);
+		return const_reverse_iterator(_end);
 	}
 
 	//////////////////////////////////////////////
@@ -163,14 +162,14 @@ namespace ft
 	typename ft::vector<T, Alloc>::reverse_iterator ft::vector<T, Alloc>::rend() {
 		if (M_DEBUG)
 			std::cout << "rend() has been invoked" << std::endl;
-		return reverse_iterator(_end - 1);
+		return reverse_iterator(begin());
 	}
 
 	template <typename T, typename Alloc>
 	typename ft::vector<T, Alloc>::const_reverse_iterator ft::vector<T, Alloc>::rend() const {
 		if (M_DEBUG)
 			std::cout << "rend() const has been invoked" << std::endl;
-		return const_reverse_iterator (_end - 1);
+		return const_reverse_iterator (begin());
 	}
 
 	//////////////////////////////////////////////////////
@@ -214,7 +213,7 @@ namespace ft
 		if (_start == NULL)
 			throw std::out_of_range("accesing empty vector");
 		if (n >= size()) {
-			std::out_of_range("index is out of range in at()");
+			throw std::out_of_range("index is out of range in at()");
 		}
 		if (M_DEBUG)
 			std::cout << "at() const has been invoked" << std::endl;
@@ -467,15 +466,16 @@ namespace ft
 	/////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	void ft::vector<T, Alloc>::push_back(const value_type &value) {
-		size_type prev_size = size();
-		if (prev_size > max_size())
-			std::length_error("length error in push_back()");
-		if (prev_size == _capacity)
-		{
-			resize(prev_size + 1, value);
-		}
-		_allocator.construct(_start + prev_size++, value);
-		// _end++;
+		// size_type prev_size = size();
+		// if (prev_size > max_size())
+		// 	std::length_error("length error in push_back()");
+		// if (prev_size == _capacity)
+		// {
+		// 	resize(prev_size + 1, value);
+		// }
+		// _allocator.construct(_start + prev_size++, value);
+		// // _end++;
+		insert(_end, value);
 	}
 
 	/////////////////////////////////////////////
@@ -494,9 +494,9 @@ namespace ft
 	/////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::vector<T, Alloc>::iterator ft::vector<T, Alloc>::insert(iterator position, const value_type &value) {
-		ptrdiff_t diff = position - iterator(begin());
+		size_type diff = position - begin();
 		insert(position, 1, value);
-		return (iterator(_start + diff));
+		return (begin() + diff);
 		// size_type prev_size = size();
 		// size_type prev_capacity = capacity();
 		// pointer tmp0;
@@ -548,13 +548,6 @@ namespace ft
 			std::logic_error("EXCEPTION : insert() error");
 		if (n < 0 || n + prev_size > max_size())
 			std::length_error("EXCEPTION : insert() error");
-		// if (prev_size + n > _capacity && _capacity * 2 <= max_size() && _capacity * 2 > prev_size + n)
-		// {
-		// 	reserve(_capacity * 2);
-		// }
-		// else if {
-		// 	tmp0 = _allocator.allocate(_capacity + n);
-		// }
 		if (prev_size + n > _capacity)
 		{
 			if (_capacity + n > max_size())
@@ -617,47 +610,82 @@ namespace ft
 		// _end = ptr;
 		// return result;
 		return erase(position, position + 1);
+		// difference_type diff(position - (iterator)(begin()));
+		// for (size_type i = 0; diff + i + 1 < size(); i++) {
+		// 	_allocator.construct(_start + diff + i, *(_start + diff + i + 1));
+		// }
+		// _allocator.destroy(_start + size() - 1);
+		// _end -= 1;
+		// return iterator(_start + diff);
 	}
 
 	template <typename T, typename Alloc>
 	typename ft::vector<T, Alloc>::iterator ft::vector<T, Alloc>::erase(iterator first, iterator last) {
 		// if (first.base() > last.base())
-		// 	std::logic_error("EXCEPTION : erase() error : out of range!");
-		// if (first.base() > last.base())
-		// 	std::logic_error("EXCEPTION : first range iterator is more than last");
+		// 	throw std::logic_error("EXCEPTION : first range iterator is more than last");
+		// if (!(first.base() >= _start && first.base() < _end) || !(last.base() >= _start && last.base() < _end))
+		// 	throw std::out_of_range("EXCEPTION : InputIter points outside of range of vector!");
 		// pointer tmp = _allocator.allocate(_capacity);
-		// int i = 0;
-		// for (; _start + i != _end; i++)
+		// pointer first_base = first.base();
+		// pointer last_base = last.base();
+		// size_type i = 0;
+		// size_type j;
+
+		// for (; _start + i != first_base; i++)
 		// {
 		// 	_allocator.construct(tmp + i, *(_start + i));
 		// 	_allocator.destroy(_start + i);
 		// }
-		// int j = i;
-		// iterator out(tmp);
-		// for (; _start + i < last.base(); i++)
+		// j = i;
+		// iterator out(tmp + i);
+		// for (; _start + i < last_base; i++)
 		// {
 		// 	_allocator.destroy(_start + i);
+		// }
+		// for (; _start + i != _end; i++)
+		// {
+		// 	_allocator.construct(tmp + j, *(_start + i));
+		// 	_allocator.destroy(_start + i);
+		// 	j++;
 		// }
 		// _allocator.deallocate(_start, _capacity);
 		// _start = tmp;
 		// _end = tmp + j;
 		// return out;
-		size_type ssize = size();
-		size_type n = distance_iterator(last, first);
+
+		size_type diff_len = distance_iterator(last, first);
 		size_type rest_len = distance_iterator(end(), last);
-		for (size_type i = 0; i < n; i++)
+		for (size_type i = 0; i < diff_len; ++i)
 		{
 			_allocator.destroy(first.base() + i);
 		}
-
-		for (size_type i = 0; i < rest_len; i++)
+		for (size_type i = 0; i < rest_len; ++i)
 		{
 			first.base()[i] = last.base()[i];
+			_allocator.destroy(last.base() + i);
 		}
-		ssize -= n;
+		_end -= diff_len;
 		return first;
-		
+		// if (size() == 0)
+			// std::cout << "error 4" << std::endl;
+
+		// std::cout << _end - _start << std::endl;
+			
+		// if (first.base() > last.base())
+			// std::cout << "error 1" << std::endl;
+
+		// if(first.base() >= _end)
+			// std::cout << "error 2.1" << std::endl;
+		// if (first.base() < _start)
+			// std::cout << "error 2.2" << std::endl;
+
+		// if(last.base() >= _end)
+			// std::cout << "error 3.1" << std::endl;
+		// if(last.base() < _start)
+			// std::cout << "error 3.2" << std::endl;
+
 	}
+
 
 	/////////////////////////////////////////////
 	//get_allocator//////////////////////////////
@@ -679,8 +707,8 @@ namespace ft
 
 		while (start != end)
 		{
-			distance++;
-			start++;
+			++distance;
+			++start;
 		}
 		return distance;
 	}

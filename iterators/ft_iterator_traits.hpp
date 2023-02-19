@@ -1,7 +1,7 @@
 #ifndef ITERATOR_TRAITS_HPP
 # define ITERATOR_TRAITS_HPP
 
-#include <iterator>
+// #include <iterator>
 #include <iostream>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -18,7 +18,7 @@ namespace ft
 	// 	class Pointer = T*,
 	// 	class Reference = T&
 	// >
-	//std::iterator is base class provided to simplify definitions of the required types for iterators
+	// // std::iterator is base class provided to simplify definitions of the required types for iterators
 
 	// struct iterator {
 	// 	typedef		Category		iterator_category;
@@ -35,7 +35,7 @@ namespace ft
 	struct bidirectional_iterator_tag 	: public forward_iterator_tag {};
 	struct random_access_iterator_tag 	: public bidirectional_iterator_tag {};
 
-	
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

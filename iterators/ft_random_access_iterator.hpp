@@ -11,7 +11,7 @@ namespace ft
 	// class ConstRandomAccessIterator;
 
 	template <typename IteratorType>
-	class RandomAccessIterator {
+	class RandomAccessIterator  {
 	public :
 		typedef				IteratorType													iterator_type;
 		typedef typename	ft::random_access_iterator_tag									iterator_category;
@@ -455,11 +455,12 @@ namespace ft
 	// 	    return (lhs.base() - rhs.base());
 	// 	}
 
-	// 	template<class T>
-	// 	typename RandomAccessIterator<T>::difference_type operator-(const ConstRandomAccessIterator<const T> &lhs, const ConstRandomAccessIterator<const T> &rhs)
-	// 	{
-	// 	    return (lhs.base() - rhs.base());
-	// 	}
+		template<class T>
+		typename RandomAccessIterator<T>::difference_type operator-(const RandomAccessIterator<const T> &lhs, const 
+		RandomAccessIterator<const T> &rhs)
+		{
+		    return (lhs.base() - rhs.base());
+		}
 
 
 		

@@ -62,11 +62,20 @@ namespace ft
 		//------------------Range constructor(copy from [first:last])------------------//
 		template <class InputIterator> vector (InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type(), typename ft::enable_if<!std::is_integral<InputIterator>::value>::type* = NULL);
 		//------------------Default destructor------------------//
-		~vector();		
+		~vector();
 		//------------------Copy constructor------------------//
 		vector(const vector &rhs, const allocator_type &alloc = allocator_type());			
 		//------------------Copy assignment operator------------------//
 		vector &operator=(const vector &rhs);
+
+		void set_empty(void) {
+			clear();
+			if (_start)
+				_allocator.deallocate(_start, size());
+			_start = NULL;
+			_end = NULL;
+			_capacity = 0;
+		}
 
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,7 +92,7 @@ namespace ft
 
 		//------------------rbegin------------------//
 		reverse_iterator		rbegin();
-		const_reverse_iterator	rbegin() const;
+		const_reverse_iterator	rbegin() const; 
 
 		//------------------rend------------------//
 		reverse_iterator		rend();

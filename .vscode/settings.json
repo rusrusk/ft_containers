@@ -67,6 +67,11 @@
 		"deque": "cpp",
 		"filesystem": "cpp",
 		"list": "cpp",
-		"set": "cpp"
+		"set": "cpp",
+		"csignal": "cpp",
+		"fstream": "cpp",
+		"iomanip": "cpp",
+		"queue": "cpp",
+		"stack": "cpp"
 	}
 }
