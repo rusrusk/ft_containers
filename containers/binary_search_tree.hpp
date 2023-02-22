@@ -7,369 +7,327 @@
 #include "../iterators/ft_iterator_traits.hpp"
 #include "../iterators/ft_utils.hpp"
 
-namespace ft
-{
-    //---------------------------------------STRUCT------------------------------------------//
-    template <typename Key, typename T>
-    struct node {
-        node *left;
-        node *right;
-        node *parent;
-        ft::pair<const Key, T> data;
-    };
+namespace ft {
+template <typename Key, typename T>
+// struct representing a node of BST
+struct Node {
+    ft::pair<const Key, T> data;  // Key is type of key and T is type of value
+    Node* left;
+    Node* right;
+    Node* parent;
+};
 
-    template <typename Key, typename T, typename Compare = std::less<Key>,
-              typename Allocator = std::allocator<ft::pair<const Key, T> > >
-    class BST {
-       public:
-        typedef Key key_type;
-        typedef T mapped_type;
-        typedef pair<const Key, T> value_type;
-        typedef const pair<const Key, T> const_value_type;
-        typedef std::size_t size_type;
-        typedef std::ptrdiff_t difference_type;
-        typedef Compare key_compare;
-        typedef Allocator allocator_type;
-        typedef typename Allocator::reference reference;
-        typedef typename Allocator::const_reference const_reference;
-        typedef typename Allocator::pointer pointer;
-        typedef typename Allocator::const_pointer const_pointer;
-
-        typedef node<Key, T> *node_pointer;
-        typedef const node<Key, T> *const_node_pointer;
-
-        typedef ft::map_iterator<node_pointer, value_type> iterator;
-        typedef ft::map_iterator<const_node_pointer, const_value_type> const_iterator;
-        typedef ft::reverse_map_iterator<iterator> reverse_iterator;
-        typedef ft::reverse_map_iterator<const_iterator> const_reverse_iterator;
-
-    //---------------------------------------PRIVATE
-    // ATTRIBUTES------------------------------------------//
+// Compare is comparator func object that compares 2 keys of type "Key" and
+// returns bool indication whether 1st arg is less than 2nd
+template <typename Key, typename T, typename Compare = std::less<Key>,
+          typename Alloc = std::allocator<ft::pair<const Key, T> > >
+class BST {
+    // types to define iterator types and other types of class
    public:
-    size_type _size;
-    allocator_type _allocator;
-    std::allocator<node<Key, T> > _node_allocator;
-    key_compare _comp;
+    typedef Key key_type;   // type of keys stored in map
+    typedef T mapped_type;  // type of values stored in map
+    typedef pair<const Key, T>
+        value_type;  // type of elems stored in map, which is pair of const key
+                     // and value
+    typedef const pair<const Key, T> const_value_type;
+    typedef std::size_t size_type;
+    typedef std::ptrdiff_t difference_type;  // diff between 2 itrs
+    typedef Compare
+        key_compare;  // binary func object used to compare keys in map
+    typedef Alloc alloc_type;
+    typedef typename Alloc::reference
+        reference;  // aliases for ref and const_ref types used to access elems
+                    // in map
+    typedef typename Alloc::const_reference const_reference;
+    typedef typename Alloc::pointer
+        pointer;  // aliases for pointer and const_pointer types used to access
+                  // elems in map
+    typedef typename Alloc::const_pointer const_pointer;
+    typedef Node<Key, T>* node_pointer;  // ptr to a node in the map
+    typedef const Node<Key, T>* const_node_pointer;
 
-    //---------------------------------------PUBLIC
-    // ATTRIBUTES------------------------------------------//
+    typedef map_iterator<node_pointer, value_type>
+        iterator;  // custom itr type used to iterate over elems in map
+    typedef map_iterator<const_node_pointer, const_value_type> const_iterator;
+    typedef reverse_map_iterator<iterator> reverse_iterator;
+    typedef reverse_map_iterator<const_iterator> const_reverse_iterator;
+
+    //---------------------------MEMBER
+    // ATTRIBUTES---------------------------------------//
    public:
-    node<Key, T> *_root;
+    key_compare _bst_compare;
+    std::allocator<Node<Key, T> > _node_allocator;
+    alloc_type _bst_allocator;
+    size_type _bst_size;
 
    public:
-    //---------------------------------------DEFAULT
-    // CONSTRUCTOR------------------------------------------//
-    BST(const Compare &comp = Compare()) : _size(0), _comp(comp), _root(NULL)  {
+        Node<Key, T>* _bst_root;
+
+   public:
+    //---------------------------CONSTRUCTOR---------------------------------------//
+    BST(const Compare& comp = Compare())
+        : _bst_compare(comp), _bst_size(0), _bst_root(NULL) {
         if (M_DEBUG)
             std::cout << "[BST] Default constructor was invoked" << std::endl;
     }
 
-    //---------------------------------------OVEERLOAD
-    // OPERATORS------------------------------------------//
-    BST &operator=(const BST &rhs) {
-        // _root = rhs._root;
-        // _size = rhs._size;
-        // _allocator = rhs._allocator;
-        // _node_allocator = rhs._node_allocator;
-        removeAll();
-        duplicate_tree(rhs.getRoot());
-        return *this;
-    }
-
-    bool operator==(const BST &rhs) { return (getRoot() == rhs.getRoot()); }
-
-    bool operator!=(const BST &rhs) { return !(getRoot() == rhs.getRoot()); }
-
-    //---------------------------------------DESTRUCTOR------------------------------------------//
+    //---------------------------------------DESTRUCTOR-------------------------------------------//
     ~BST() {
         if (M_DEBUG) std::cout << "[BST] Destructor was invoked" << std::endl;
     }
 
-    //-------------------COPY STUFF-------------------//
-
-    void duplicate_tree(node_pointer root = NULL) {
-        if (!root) return;
-        insertNode(root->data);
-        duplicate_tree(root->left);
-        duplicate_tree(root->right);
+    //---------------------------COPY ASSIGNMENT
+    // OPERATOR----------------------------------------//
+    BST& operator=(const BST& rhs) {
+        deleteAll();
+        duplicateTree(rhs.getRoot());
+        return (*this);
     }
 
-    //-------------------ITERATOR METHODS-------------------//
+    //---------------------------COPY
+    // STUFF---------------------------------------// takes ptr to the root and
+    // recursively duplcates entire tree by inserting data of each node into a
+    // new tree
+    void duplicateTree(node_pointer root = NULL) {
+        if (root == NULL) return;
+        insertNode(root->data);
+        duplicateTree(root->left);
+        duplicateTree(root->right);
+    }
+
+    //---------------------------GETTERS---------------------------------------//
+    node_pointer getBstRoot(void) const { return _bst_root; }
+
+    //---------------------------ITERATORS---------------------------------------//
     node_pointer begin(void) const {
-        node_pointer tmp = this->_root;
+        node_pointer tmp = _bst_root;
         while (tmp && tmp->left) tmp = tmp->left;
-        return tmp;
+        return (tmp);
     }
 
     node_pointer end(void) const {
-        node_pointer tmp = this->_root;
-        if (!tmp) return NULL;
+        node_pointer tmp = _bst_root;
+        if (!tmp) return (NULL);
         while (tmp && tmp->right) tmp = tmp->right;
-        return tmp->right;
+        return (tmp->right);
     }
 
-    // node_pointer rbegin() const {
-    //     node_pointer tmp = this->_root;
-    //     while (tmp && tmp->right) {
-    //         tmp = tmp->right;
-    //     }
-    //     return tmp;
-    // }
+    //---------------------------CAPACITY----------------------------------------//
 
-    // node_pointer rend() const {
-    //     node_pointer tmp = this->_root;
-    //     while (tmp && tmp->left) {
-    //         tmp = tmp->left;
-    //     }
-    //     tmp = tmp->left;
-    //     return tmp;
-    // }
+    bool empty() const { return !_bst_size; }
 
-    //-------------------CAPACITY-------------------//
-    bool empty() const { return this->_size = 0; }
+    size_type size() const { return _bst_size; }
 
-    size_type size() const { return this->_size; }
+    size_type max_size() const { return _bst_allocator.max_size(); }
 
-    size_type max_size() const { return this->_allocator.max_size(); }
+    //---------------------------MODIFIERS----------------------------------------//
 
-    //-------------------MODIFIERS-------------------//
-    node_pointer newNode(const value_type &value, node_pointer parent = NULL) {
-        node_pointer new_node = _node_allocator.allocate(1);
-        _allocator.construct(&(new_node->data), value);
-        new_node->left = NULL;
-        new_node->right = NULL;
-        new_node->parent = parent;
-        ++_size;
-        return new_node;
+    node_pointer createNewNode(const value_type& new_data,
+                               node_pointer parent = NULL) {
+        node_pointer newNode = _node_allocator.allocate(1);
+        _bst_allocator.construct(&(newNode->data), new_data);
+        newNode->left = NULL;
+        newNode->right = NULL;
+        newNode->parent = parent;
+        _bst_size++;
+        return (newNode);
     }
 
-    node_pointer insertNode(const value_type &data) {
-        if (!_root) {
-            _root = newNode(data);
-            return _root;
+    node_pointer insertNode(const value_type& data) {
+        if (_bst_root == NULL) {
+            _bst_root = createNewNode(data);
+            return (_bst_root);
         }
-        node_pointer found = findKey(data.first);
-        if (found) return found;
+        node_pointer found = searchForKey(data.first);
         node_pointer tmp = NULL;
-        found = _root;
-        while (found) {
+        if (found) return (found);
+        found = _bst_root;
+        while (found != NULL) {
             tmp = found;
-            if (_comp(data.first, found->data.first))
+            if (_bst_compare(data.first, found->data.first))
                 found = found->left;
             else
                 found = found->right;
         }
-        found = newNode(data, tmp);
-        if (_comp(data.first, tmp->data.first))
+        found = createNewNode(data, tmp);
+        if (_bst_compare(data.first, tmp->data.first))
             tmp->left = found;
         else
             tmp->right = found;
-        return found;
+        return (found);
     }
 
-    node_pointer treeMinimumNode(node_pointer bst) const {
-        if (M_DEBUG) std::cout << "[BST] <Minimum Node>" << std::endl;
-        node_pointer curr = bst;
-        while (curr && curr->left != NULL) {
-            curr = curr->left;
-        }
-        return curr;
-    }
-
-    node_pointer treeMaximumNode(node_pointer bst) const {
-        if (M_DEBUG) std::cout << "[BST] <Maximum Node>" << std::endl;
-        node_pointer curr = bst;
-        while (curr && curr->right != NULL) {
-            curr = curr->right;
-        }
-        return curr;
-    }
-
-    //-----------------------DELETE OPERATIONS-----------------------//
-    void removeLeaf(node_pointer deleted) {
-        if (!deleted) return;
-        node_pointer parent = deleted->parent;
-        if (!parent)
-            _root = NULL;
-        else if (deleted == parent->left)
-            parent->left = NULL;
-        else if (deleted == parent->right)
-            parent->right = NULL;
-        _node_allocator.destroy(deleted);
-        _node_allocator.deallocate(deleted, 1);
-        --_size;
-    }
-
-    void removeNode(node_pointer to_delete) {
-        if (M_DEBUG) std::cout << "[binary_search_tree.hpp] : removeNode()\n";
+    //---------------------------REMOVAL
+    // METHODS---------------------------------------//
+    void deleteNode(node_pointer to_delete) {
         if (!to_delete) return;
-        if ((to_delete->left == NULL) && (to_delete->right == NULL))
-            removeLeaf(to_delete);
+        if ((!to_delete->left) && (!to_delete->right))
+            deleteLeaf(to_delete);
         else {
             node_pointer next;
             if (to_delete->left)
                 next = getPredecessor(to_delete);
             else
                 next = getSuccessor(to_delete);
-            if (!swapNode(to_delete, next)) _root = next;
-            removeNode(to_delete);
+            if (!swapNodeValue(to_delete, next)) _bst_root = next;
+            deleteNode(to_delete);
         }
     }
 
-    size_type erase_elem(const Key &key) {
-        if (M_DEBUG) std::cout << "[binary_search_tree.hpp] : erase()\n";
-        node_pointer found = findKey(key);
-        if (!_root || !found) return 0;
-        removeNode(found);
+    size_type erase(const key_type& key) {
+        node_pointer found = searchForKey(key);
+
+        if (!_bst_root || !found) return (0);
+        deleteNode(found);
         return (1);
     }
 
-    void removeAll(node_pointer root_arg = NULL) {
-        if (!root_arg) root_arg = _root;
-        if (!root_arg) return;
-        if (root_arg->right) removeAll(root_arg->right);
-        if (root_arg->left) removeAll(root_arg->left);
-        removeLeaf(root_arg);
+    void deleteLeaf(node_pointer to_delete) {
+        if (to_delete == NULL) return;
+        node_pointer parent = to_delete->parent;
+        if (parent == NULL)
+            _bst_root = NULL;
+        else if (to_delete == parent->left)
+            parent->left = NULL;
+        else if (to_delete == parent->right)
+            parent->right = NULL;
+        _node_allocator.destroy(to_delete);
+        _node_allocator.deallocate(to_delete, 1);
+        _bst_size--;
     }
 
-    //-----------------------CRUCIAL FUNCTIONS-----------------------//
-    // extract_key takes a value of any type and and returns the value.
-    // template <class value>
-    // value extract_key(value val) {
-    //     return (val);
-    // }
+    void deleteAll(node_pointer root = NULL) {
+        if (root == NULL) root = _bst_root;
+        if (root == NULL) return;
+        if (root->left != NULL) deleteAll(root->left);
+        if (root->right != NULL) deleteAll(root->right);
+        deleteLeaf(root);
+    }
 
-    // template <class first, class second>
-    // first extract_key(ft::pair<first, second> pair) {
-    //     return pair.first;
-    // }
-
-    // void changeData(node_pointer curr, const value_type &value) {
-    //     _allocator.construct(&(curr->data), value);
-    // }
-
-    //---------PREDECESSOR AND SUCCESSOR----------//
-    node_pointer getPredecessor(node_pointer node_value) {
-        if (node_value->left != NULL)
-            return treeMaximumNode(node_value->left);
+    //---------------------------PREDECESSOR AND SUCCESSOR
+    // METHODS---------------------------------------//
+    static node_pointer getSuccessor(node_pointer node) {
+        if (node->right != NULL)
+            return treeMinimumNode(node->right);
         else {
-            node_pointer tmp_parent = node_value->parent;
-            while (tmp_parent != NULL && node_value == tmp_parent->left) {
-                node_value = tmp_parent;
-                tmp_parent = tmp_parent->parent;
+            node_pointer parent = node->parent;
+            while (parent != NULL && node == parent->right) {
+                node = parent;
+                parent = parent->parent;
             }
-            node_value = tmp_parent;
+            node = parent;
         }
-        return node_value;
+        return node;
     }
 
-    // if the subtree of node_value is not empty, the successor of node_value is
-    // just leftmost node in node_value's right subtree which is
-    // treeMinimumNode(). else right subtree is empty and node_value has
-    // successor tmp_parent, then tmp_parent is lowest ancestor of node_value
-    // whose left child is also an ancestor of node_value.
-    node_pointer getSuccessor(node_pointer node_value) {
-        if (node_value->right)
-            return treeMinimumNode(node_value->right);
+    static node_pointer getPredecessor(node_pointer node) {
+        if (node->left != NULL)
+            return treeMaximumNode(node->left);
         else {
-            node_pointer tmp_parent = node_value->parent;
-            while (tmp_parent && node_value == tmp_parent->right) {
-                node_value = tmp_parent;
-                tmp_parent = tmp_parent->parent;
+            node_pointer parent = node->parent;
+            while (parent != NULL && node == parent->left) {
+                node = parent;
+                parent = parent->parent;
             }
-            node_value = tmp_parent;
+            node = parent;
         }
-        return node_value;
+        return node;
     }
 
-    //-----------------------SWAP METHOD-----------------------//
-    static bool swapNode(node_pointer first_node, node_pointer second_node) {
-        if (M_DEBUG) std::cout << "[binary_search_tree.hpp] : swapNode()\n";
-        node_pointer first_parent = first_node->parent;
-        node_pointer first_left_node = first_node->left;
-        node_pointer first_right_node = first_node->right;
-        node_pointer second_parent = second_node->parent;
-        node_pointer second_left_node = second_node->left;
-        node_pointer second_right_node = second_node->right;
+    //---------------------------SWAP
+    // STUFF---------------------------------------// returns bool val
+    // indicating
+    // whether root of tree was changed during swap saves all vars, updates
+    // parent n child ptrs of both nodes to point to other node also updates
+    // parent ptr of childrent of both nodes updates left and right children of
+    // both nodes to their orig values, and updates parent ptrs of those
+    // children
+    static bool swapNodeValue(node_pointer node1, node_pointer node2) {
+        node_pointer parent1 = node1->parent;
+        node_pointer node1Left = node1->left;
+        node_pointer node1Right = node1->right;
+        node_pointer parent2 = node2->parent;
+        node_pointer node2Left = node2->left;
+        node_pointer node2Right = node2->right;
 
-        if (first_parent && first_parent->left == first_node)
-            first_parent->left = second_node;
-        else if (first_parent)
-            first_parent->right = second_node;
-        second_node->parent = first_parent;
-        if (second_parent && second_parent->left == second_node)
-            second_parent->left = first_node;
-        else if (second_parent)
-            second_parent->right = first_node;
-        if (second_parent != first_node)
-            first_node->parent = second_parent;
+        if (parent1 != NULL && parent1->left == node1)
+            parent1->left = node2;
+        else if (parent1 != NULL)
+            parent1->right = node2;
+        node2->parent = parent1;
+
+        if (parent2 != NULL && parent2->left == node2)
+            parent2->left = node1;
+        else if (parent2 != NULL)
+            parent2->right = node1;
+        if (parent2 != node1)
+            node1->parent = parent2;
         else
-            first_node->parent = second_node;
-        if (first_left_node == second_node) {
-            second_node->left = first_node;
-            second_node->right = first_right_node;
-        } else if (first_right_node == second_node) {
-            second_node->right = first_node;
-            second_node->left = first_left_node;
+            node1->parent = node2;
+
+        if (node1Left == node2) {
+            node2->left = node1;
+            node2->right = node1Right;
+        } else if (node1Right == node2) {
+            node2->right = node1;
+            node2->left = node1Left;
         } else {
-            second_node->left = first_left_node;
-            second_node->right = first_right_node;
+            node2->left = node1Left;
+            node2->right = node1Right;
         }
-        if (first_right_node && first_right_node != second_node)
-            first_right_node->parent = second_node;
-        if (first_left_node && first_left_node != second_node)
-            first_left_node->parent = second_node;
-        first_node->left = second_left_node;
-        if (second_left_node) second_left_node->parent = first_node;
-        first_node->right = second_right_node;
-        if (second_right_node) second_right_node->parent = first_node;
-        if (!first_parent) return false;
+
+        if (node1Right && node1Right != node2) node1Right->parent = node2;
+        if (node1Left && node1Left != node2) node1Left->parent = node2;
+
+        node1->left = node2Left;
+        if (node2Left) node2Left->parent = node1;
+        node1->right = node2Right;
+        if (node2Right) node2Right->parent = node1;
+
+        if (parent1 == NULL) return false;
         return true;
     }
 
-    //-----------------------OBSERVERS-----------------------//
-    bool similar_key_exists(const key_type &data, node_pointer curr) const {
-        if (!curr) return false;
-        if (curr->data.first <= data)
-            return similar_key_exists(data, curr->right);
-        else if (curr->data.first >= data)
-            return similar_key_exists(data, curr->left);
-        else
+    void swap(BST& other) {
+        if (this == &other) return;
+        std::swap(this->_bst_root, other._bst_root);
+        std::swap(this->_bst_size, other._bst_size);
+    }
+
+    //---------------------------OBSERVERS----------------------------------------//
+
+    static node_pointer treeMaximumNode(node_pointer curr) {
+        while (curr && curr->right) curr = curr->right;
+        return (curr);
+    }
+
+    static node_pointer treeMinimumNode(node_pointer curr) {
+        while (curr && curr->left) curr = curr->left;
+        return (curr);
+    }
+
+    bool sameKeyExists(const key_type& data, node_pointer m_root) const {
+        if (m_root == NULL) return false;
+        if (m_root->data.first == data)
             return true;
+        else if (m_root->data.first <= data)
+            return sameKeyExists(data, m_root->right);
+        else
+            return sameKeyExists(data, m_root->left);
     }
 
-    node_pointer getRoot() const { return this->_root; }
+    node_pointer searchForKey(const key_type& key) const {
+        node_pointer tmp = _bst_root;
 
-    // I set ret to root of bst. It then enters loop that iterates until either
-    // ret == null or the key of curr node is equal to desired key. In each
-    // iteration, the function uses _comp func to compare desired key and key of
-    // curr node. If desired key is less than curr, the func sets ret to the
-    // left child of curr node. If desired key is more than curr, ret goes to
-    // the right child of curr node. extract_key is used to allow findKey be
-    // used with diff typed of data stored in bst.
-    node_pointer findKey(const key_type &key) const {
-        node_pointer result = _root;
-        while (result && result->data.first != key) {
-            if (_comp(key, result->data.first))
-                result = result->left;
+        while (tmp != NULL && tmp->data.first != key) {
+            if (_bst_compare(key, tmp->data.first))
+                tmp = tmp->left;
             else
-                result = result->right;
+                tmp = tmp->right;
         }
-        return result;
+        return (tmp);
     }
-
-    node_pointer getToRoot() const {
-        node_pointer tmp_root = _root;
-        while (tmp_root->parent) tmp_root = tmp_root->parent;
-        return tmp_root;
-    }
-
-    bool _isLeaf(node_pointer bst) const {
-        return (bst->left == NULL && bst->right == NULL);
-    }
-
-    bool _isEmpty(node_pointer bst) const { return bst = NULL; }
-    };
+};
 };  // namespace ft
 
 #endif

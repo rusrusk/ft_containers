@@ -7,12 +7,11 @@
 
 namespace ft
 {
-	// template <typename IteratorType>
-	// class ConstRandomAccessIterator;
-
+	//takes IteratorType as its param, which is the type of underlying itr that the RAI wraps around
 	template <typename IteratorType>
 	class RandomAccessIterator  {
 	public :
+		//These are used to define behaviour of itr and are required by STL
 		typedef				IteratorType													iterator_type;
 		typedef typename	ft::random_access_iterator_tag									iterator_category;
 		typedef typename	ft::iterator_traits<iterator_type>::value_type					value_type;
@@ -28,11 +27,13 @@ namespace ft
 		RandomAccessIterator() : _pointer(NULL) {};
 
 		//---------------COPY CONSTRUCTOR---------------//
+		//allows creating a new RAI from existing one
 		template <typename Iter>
 		RandomAccessIterator(const RandomAccessIterator<Iter> &it) : _pointer(it.base()) {};
 
 
 		//---------------POINTER CONSTRUCTOR---------------//
+		//takes a poiinter to underlying iterator
 		RandomAccessIterator(pointer ptr) : _pointer(ptr) {};
 
 
@@ -40,23 +41,18 @@ namespace ft
 		~RandomAccessIterator() {};
 
 		//---------------BASE---------------//
+		//returns underlying iterator
 		pointer base() const {
 			return _pointer;
 		}
 
 		//--------------COPY ASSIGNMENT OPERATOR---------------//
-		// template <typename Iter>
 		RandomAccessIterator &operator=(const RandomAccessIterator &rhs) {
 			if (this == &rhs)
 				return *this;
 			_pointer = rhs._pointer;
 			return *this;
 		}
-
-		// RandomAccessIterator &operator=(const RandomAccessIterator &rhs) {
-		// 	_pointer = rhs._pointer;
-		// 	return (*this);
-		// }
 
 		//--------------PREFIX INCREMENT OPERATOR---------------//
 		RandomAccessIterator &operator++() {
@@ -138,6 +134,7 @@ namespace ft
 
 
 		//--------------REFERENCE AND DEREFERENCE OPERATORS---------------//
+		//overloaded reference and dereference opers allow accessing value pointed to by the itr
 		pointer operator->() const {
 			return (_pointer);
 		}
@@ -149,311 +146,12 @@ namespace ft
 		reference operator[](const difference_type& n) const {
 			return (*(_pointer + n));
 		}
-
-		// //--------------EQUALITY AND INEQUALITY COMPARISON OVERLOAD OPERATORS---------------//
-		// // template<typename IterLhs, typename IterRhs>
-		// bool operator==(const RandomAccessIterator<IteratorType> rhs) const {
-		// 	return base() == rhs.base();
-		// }
-
-		// // template<class IterLhs, typename IterRhs>
-		// bool operator!=(const RandomAccessIterator<IteratorType> rhs) const {
-		// 	return base() != rhs.base();
-		// }
-
-		// //--------------RELATIONAL OPERATORS---------------//
-		// // template<typename IterLhs, typename IterRhs>
-		// bool operator>(const RandomAccessIterator<IteratorType> rhs) const {
-		// 	return base() > rhs.base();
-		// }
-
-		// // template <typename IterLhs, typename IterRhs>
-		// bool operator<(const RandomAccessIterator<IteratorType> rhs) const {
-		// 	return base() < rhs.base();
-		// }
-
-		// // template <typename IterLhs, typename IterRhs>
-		// bool operator>=(const RandomAccessIterator<IteratorType> rhs) const {
-		// 	return base() >= rhs.base();
-		// }
-
-		// // template<typename IterLhs, typename IterRhs>
-		// bool operator<=(const RandomAccessIterator<IteratorType> rhs) const {
-		// 	return base() <= rhs.base();
-		// }
-
-		// //--------------RELATIONAL OPERATORS USING CONST ITERATORS---------------//
-		// bool operator==(const ConstRandomAccessIterator<IteratorType>rhs) const {
-		// 	return (base() == rhs.base());
-		// }
-
-		// bool operator!=(const ConstRandomAccessIterator<IteratorType>rhs) const {
-		// 	return (base() != rhs.base());
-		// }
-
-		// bool operator<(const ConstRandomAccessIterator<IteratorType>rhs) const {
-		// 	return (base() < rhs.base());
-		// }
-
-		// bool operator>(const ConstRandomAccessIterator<IteratorType>rhs) const {
-		// 	return (base() > rhs.base());
-		// }
-
-		// bool operator>=(const ConstRandomAccessIterator<IteratorType>rhs) const {
-		// 	return (base() >= rhs.base());
-		// }
-
-		// bool operator<=(const ConstRandomAccessIterator<IteratorType>rhs) const {
-		// 	return (base() <= rhs.base());
-		// }
-
-
-
-
 	};
-
-	// template <typename Iter1, typename Iter2>
-	// bool operator==(const RandomAccessIterator<Iter1> &lhs, const RandomAccessIterator<Iter2> &rhs) {
-	// 	return lhs.base() == rhs.base();
-	// }
-	// template <typename Iter1>
-	// bool operator==(const RandomAccessIterator<Iter1> &lhs, const RandomAccessIterator<Iter1> &rhs) {
-	// 	return lhs.base() == rhs.base();
-	// }
-	// template <typename Iter1, typename Iter2>
-	// bool operator!=(const RandomAccessIterator<Iter1> &lhs, const RandomAccessIterator<Iter2> &rhs) {
-	// 	return lhs.base() != rhs.base();
-	// }
-	// template <typename Iter1>
-	// bool operator!=(const RandomAccessIterator<Iter1> &lhs, const RandomAccessIterator<Iter1> &rhs) {
-	// 	return lhs.base() != rhs.base();
-	// }
-	// template <typename Iter1, typename Iter2>
-	// bool operator<(const RandomAccessIterator<Iter1> &lhs, const RandomAccessIterator<Iter2> &rhs) {
-	// 	return lhs.base() < rhs.base();
-	// }
-	// template <typename Iter1>
-	// bool operator<(const RandomAccessIterator<Iter1> &lhs, const RandomAccessIterator<Iter1> &rhs) {
-	// 	return lhs.base() < rhs.base();
-	// }
-	// template <typename Iter1, typename Iter2>
-	// bool operator<=(const RandomAccessIterator<Iter1> &lhs, const RandomAccessIterator<Iter2> &rhs) {
-	// 	return lhs.base() <= rhs.base();
-	// }
-	// template <typename Iter1>
-	// bool operator<=(const RandomAccessIterator<Iter1> &lhs, const RandomAccessIterator<Iter1> &rhs) {
-	// 	return lhs.base() <= rhs.base();
-	// }
-	// template <typename Iter1, typename Iter2>
-	// bool operator>(const RandomAccessIterator<Iter1> &lhs, const RandomAccessIterator<Iter2> &rhs) {
-	// 	return lhs.base() > rhs.base();
-	// }
-	// template <typename Iter1>
-	// bool operator>(const RandomAccessIterator<Iter1> &lhs, const RandomAccessIterator<Iter1> &rhs) {
-	// 	return lhs.base() > rhs.base();
-	// }
-	// template <typename Iter1, typename Iter2>
-	// bool operator>=(const RandomAccessIterator<Iter1> &lhs, const RandomAccessIterator<Iter2> &rhs) {
-	// 	return lhs.base() >= rhs.base();
-	// }
-	// template <typename Iter1>
-	// bool operator>=(const RandomAccessIterator<Iter1> &lhs, const RandomAccessIterator<Iter1> &rhs) {
-	// 	return lhs.base() >= rhs.base();
-	// }
-
-	// template <typename Iter1, typename Iter2>
-	// typename ft::iterator_traits<Iter1>::difference_type operator-(const RandomAccessIterator<Iter1> &lhs, const RandomAccessIterator<Iter2> &rhs) {
-	// 	return lhs.base() - rhs.base();
-	// }
-
-	// template <typename Iter1>
-	// typename ft::iterator_traits<Iter1>::difference_type operator-(const RandomAccessIterator<Iter1> &lhs, const RandomAccessIterator<Iter1> &rhs) {
-	// 	return lhs.base() - rhs.base();
-	// }
-
-	// template <typename Iter1>
-	// RandomAccessIterator<Iter1> operator+(typename ft::iterator_traits<Iter1>::difference_type n, const RandomAccessIterator<Iter1> &rhs) {
-	// 	return RandomAccessIterator<Iter1>(rhs.base() + n);
-	// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-	// template <typename IteratorType>
-	// class ConstRandomAccessIterator : public ft::iterator<random_access_iterator_tag, IteratorType>
-	// {
-	// 	public :
-	// 			typedef const 	typename 	ft::iterator<random_access_iterator_tag, IteratorType>::value_type			value_type;
-	// 			typedef 		typename	ft::iterator<random_access_iterator_tag, IteratorType>::difference_type		difference_type;
-	// 			typedef 		typename	ft::iterator<random_access_iterator_tag, IteratorType>::pointer				pointer;
-	// 			typedef 		typename	ft::iterator<random_access_iterator_tag, IteratorType>::reference			reference;
-	// 			typedef 		typename	ft::iterator<random_access_iterator_tag, IteratorType>::iterator_category	iterator_category;
-
-	// 	protected :
-	// 			pointer _pointer;
-
-	// 	public :
-
-	// 		ConstRandomAccessIterator() : _pointer(NULL) {};
-
-	// 		ConstRandomAccessIterator(const ConstRandomAccessIterator &rhs) : _pointer(rhs._pointer) {};
-
-	// 		ConstRandomAccessIterator(pointer ptr) : _pointer(ptr) {};
-
-	// 		template <class Iter>
-	// 		ConstRandomAccessIterator(const RandomAccessIterator<Iter> &rhs) : _pointer(rhs.base()) {};
-
-	// 		~ConstRandomAccessIterator() {};
-
-
-	// 		ConstRandomAccessIterator &operator=(const ConstRandomAccessIterator &rhs) {
-	// 			_pointer = rhs._pointer;
-	// 			return (*this);
-	// 		}
-
-	// 		template <typename Iter>
-	// 		ConstRandomAccessIterator &operator=(const RandomAccessIterator<Iter>&rhs) {
-	// 			_pointer = rhs._pointer;
-	// 			return (*this);
-	// 		}
-
-	// 		pointer base() const {
-	// 			return _pointer;
-	// 		}
-
-	// 		reference operator*(void) const {
-	// 			return *_pointer;
-	// 		}
-
-	// 		pointer operator->() const {
-	// 			return (&(operator*()));
-	// 		}
-
-	// 		ConstRandomAccessIterator &operator++(void) {
-	// 			_pointer++;
-	// 			return (*this);
-	// 		}
-
-	// 		ConstRandomAccessIterator operator++(int) {
-	// 			ConstRandomAccessIterator tmp(*this);
-	// 			++(*this);
-	// 			return tmp;
-	// 		}
-
-	// 		ConstRandomAccessIterator &operator--(void) {
-	// 			_pointer++;
-	// 			return (*this);
-	// 		}
-
-	// 		ConstRandomAccessIterator operator--(int) {
-	// 			ConstRandomAccessIterator tmp(*this);
-	// 			++(*this);
-	// 			return tmp;
-	// 		}
-
-	// 		ConstRandomAccessIterator operator+(difference_type n) const {
-	// 			return (ConstRandomAccessIterator(_pointer + n));
-	// 		}
-
-	// 		ConstRandomAccessIterator operator-(difference_type n) const {
-	// 			return (ConstRandomAccessIterator(_pointer - n));
-	// 		}
-
-	// 		ConstRandomAccessIterator &operator+=(difference_type n) {
-	// 			_pointer += n;
-	// 			return (*this);
-	// 		}
-
-	// 		ConstRandomAccessIterator &operator-=(difference_type n) {
-	// 			_pointer -= n;
-	// 			return (*this);
-	// 		}
-
-	// 		reference operator[](difference_type n) const {
-	// 			return (*(_pointer + n));
-	// 		}
-
-	// 		bool operator==(const ConstRandomAccessIterator <IteratorType>rhs) const {
-	// 			return (base() == rhs.base());
-	// 		}
-
-	// 		bool operator!=(const ConstRandomAccessIterator <IteratorType>rhs) const {
-	// 			return (base() != rhs.base());
-	// 		}
-
-	// 		bool operator<(const ConstRandomAccessIterator <IteratorType>rhs) const {
-	// 			return (base() < rhs.base());
-	// 		}
-
-	// 		bool operator>(const ConstRandomAccessIterator<IteratorType>rhs) const {
-	// 			return (base() > rhs.base());
-	// 		}
-
-	// 		bool operator>=(const ConstRandomAccessIterator<IteratorType>rhs) const {
-	// 			return (base() >= rhs.base());
-	// 		}
-
-	// 		bool operator<=(const ConstRandomAccessIterator<IteratorType>rhs) const {
-	// 			return (base() <= rhs.base());
-	// 		}
-
-	// 		//--------------RELATIONAL OPERATORS WITH NON-CONST ITERATORS---------------//
-	// 		bool operator==(const RandomAccessIterator<IteratorType> rhs) const {
-	// 			return (base() == rhs.base());
-	// 		}
-
-	// 		bool operator!=(const RandomAccessIterator<IteratorType> rhs) const {
-	// 			return (base() != rhs.base());
-	// 		}
-
-	// 		bool operator<(const RandomAccessIterator<IteratorType> rhs) const {
-	// 			return (base() < rhs.base());
-	// 		}
-
-	// 		bool operator>(const RandomAccessIterator<IteratorType> rhs) const {
-	// 			return (base() > rhs.base());
-	// 		}
-
-	// 		bool operator>=(const RandomAccessIterator<IteratorType> rhs) const {
-	// 			return (base() >= rhs.base());
-	// 		}
-
-	// 		bool operator<=(const RandomAccessIterator<IteratorType> rhs) const {
-	// 			return (base() <= rhs.base());
-	// 		}
-
-
-
-			
-	// };
-
-		
+		//these non-member methods take 2 arguments of diff types. left side takes int and right side takes object of type RAI
 		template <class Iter>
 		RandomAccessIterator<Iter> operator+(typename RandomAccessIterator<Iter>::difference_type const n, RandomAccessIterator<Iter> const &rhs) {
 			return (RandomAccessIterator<Iter>(rhs.base() + n));
 		}
-
-
-	// 	template<class T>
-	// 	typename RandomAccessIterator<T>::difference_type operator-(const RandomAccessIterator<T> &lhs, const ConstRandomAccessIterator<const T> &rhs)
-	// 	{
-	// 	    return (lhs.base() - rhs.base());
-	// 	}
-
-	// 	template<class T>
-	// 	typename RandomAccessIterator<T>::difference_type operator-(const ConstRandomAccessIterator<const T> &lhs, const RandomAccessIterator<T> &rhs)
-	// 	{
-	// 	    return (lhs.base() - rhs.base());
-	// 	}
 
 		template<class T>
 		typename RandomAccessIterator<T>::difference_type operator-(const RandomAccessIterator<const T> &lhs, const 
@@ -461,17 +159,6 @@ namespace ft
 		{
 		    return (lhs.base() - rhs.base());
 		}
-
-
-		
-
 }
-
-
-
-
-
-
-
 
 #endif

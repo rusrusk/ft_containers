@@ -15,6 +15,7 @@
 
 namespace ft
 {
+	//it stores elements of type T and uses allocator A for memory management. std::allocator is the default
 	template <class T, class A = std::allocator<T> >
 		class vector {
 
@@ -22,20 +23,20 @@ namespace ft
 			public :
 			/////////////////////********** ALLOCATOR TYPES **********/////////////////////
 			/////////////////////********** base type **********/////////////////////
-				typedef					T								value_type;					//type of element
-				typedef					A								allocator_type;				//type of memory manager
-				typedef					std::ptrdiff_t					difference_type;
+				typedef					T								value_type;					//type of element stored in vector
+				typedef					A								allocator_type;				//type of allocator used for memory management
+				typedef					std::ptrdiff_t					difference_type;			//diff between 2 iterators
 
 			/////////////////////********** pointers and reference **********/////////////////////
-				typedef typename		A::reference					reference;					//reference to element
-				typedef	typename		A::const_reference				const_reference;
+				typedef typename		A::reference					reference;					//reference to element in vector
+				typedef	typename		A::const_reference				const_reference;			
 				typedef typename		A::pointer						pointer;					//pointer to element
 				typedef	typename		A::const_pointer				const_pointer;
-				typedef	typename		A::size_type					size_type;
+				typedef	typename		A::size_type					size_type;					//type used to reperesent size of vector
 			
 
 			/////////////////////********** ITERATOR TYPES **********/////////////////////
-				typedef  ft::RandomAccessIterator<pointer>					iterator;
+				typedef  ft::RandomAccessIterator<pointer>					iterator;				//RAI to the elements in vector
 				typedef  ft::RandomAccessIterator<const_pointer>			const_iterator;
 				typedef  ft::ReverseIterator<iterator>						reverse_iterator;
 				typedef  ft::ReverseIterator<const_iterator>				const_reverse_iterator;
@@ -45,8 +46,10 @@ namespace ft
 					size_type				_size;
 					size_type				_capacity;
 					allocator_type			_allocator;
-					pointer					_start;
-					pointer					_end;
+					pointer					_pointer;
+					
+					//reallocated when vector needs to grow in size
+					void reallocate(size_type new_capacity, value_type value = value_type());
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,20 +63,19 @@ namespace ft
 		//------------------Fill constructor(n copies of val)------------------//
 		explicit vector(size_type n, const value_type &val = value_type(), const allocator_type &alloc = allocator_type());
 		//------------------Range constructor(copy from [first:last])------------------//
-		template <class InputIterator> vector (InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type(), typename ft::enable_if<!std::is_integral<InputIterator>::value>::type* = NULL);
+		template <class InputIterator> vector (InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL);
 		//------------------Default destructor------------------//
 		~vector();
 		//------------------Copy constructor------------------//
-		vector(const vector &rhs, const allocator_type &alloc = allocator_type());			
+		vector(const vector &rhs);			
 		//------------------Copy assignment operator------------------//
 		vector &operator=(const vector &rhs);
 
 		void set_empty(void) {
 			clear();
-			if (_start)
-				_allocator.deallocate(_start, size());
-			_start = NULL;
-			_end = NULL;
+			if (_pointer)
+				_allocator.deallocate(_pointer, size());
+			_pointer = NULL;
 			_capacity = 0;
 		}
 

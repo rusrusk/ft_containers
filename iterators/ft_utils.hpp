@@ -21,6 +21,10 @@ namespace ft
 	}
 
 //-----------------ENABLE-IF-----------------//
+//metafunction is used to conditionally enable function templates or class templates based on boolean expression
+//<enable_if>has 2 template params<B, T>. If <B> ? then the nested "type" typedef is define as T : doesn't have a type
+//When <enable_if is used in func template, compiler will replace nested typedef type only if boolen B is true.
+//This can be used to enable/disable func templates based on type of their arguments and allows to schoose correct overload of a func
 	template<bool B, class T = void >
 	struct enable_if
 	{
@@ -58,7 +62,7 @@ namespace ft
 		{
 
 		}
-		pair &operator=(const pair &rhs)
+		pair &operator=(const pair &rhs) 
 		{
 			first = rhs.first;
 			second = rhs.second;
@@ -163,29 +167,16 @@ namespace ft
 		return (!(lhs < rhs));
 	}
 
-		
-//------------FT_BINARY_FUNCTION--------------------------------------
-
-
-	template< typename Arg1, typename Arg2, typename Result >
-	struct binary_function
-	{
-		typedef Arg1				first_argument_type;
-		typedef Arg2				second_argument_type;
-		typedef Result				result_type;
-	};
-
-
 //------------INTEGRAL_CONSTANT--------------------------------------
 
-
+	//used to provide compile-time constants of integral types.
 	template<typename T, T v>
 	struct integral_constant
 	{
-		static const T value = v;
-		typedef T value_type;
-		typedef integral_constant<T, v> type;
-		operator T() { return v; }
+		static const T value = v;				//value contains the constant value
+		typedef T value_type;					
+		typedef integral_constant<T, v> type;	//refers to integral_constant itself
+		operator T() { return v; }				//allows implicit conversions to underlying value
 	};
 
 	template<typename T, T v>
@@ -204,55 +195,16 @@ namespace ft
 	template<> struct is_integral<signed char> : public true_type {};
 	template<> struct is_integral<unsigned char> : public true_type {};
 	template<> struct is_integral<wchar_t> : public true_type {};
-	// template<> struct is_integral<char16_t> : public true_type {}; //c++11
-	// template<> struct is_integral<char32_t> : public true_type {}; //c++11
+
 	template<> struct is_integral<short> : public true_type {};
 	template<> struct is_integral<int> : public true_type {};
 	template<> struct is_integral<long> : public true_type {};
-	// template<> struct is_integral<long long> : public true_type {}; //c++11
+
 
 	template<> struct is_integral<unsigned short> : public true_type {};
 	template<> struct is_integral<unsigned int> : public true_type {};
 	template<> struct is_integral<unsigned long> : public true_type {};
 
-	// template <typename T, T v>
-	// struct integral_constant {
-	// 	static const T value = v;
-	// 	typedef T value_type;
-	// 	typedef integral_constant<T, v> type;
-	// 	operator T() {
-	// 		return v;
-	// 	}
-	// };
-
-	// template <typename T, T v>
-	// const T integral_constant<T, v>::value;
-
-	// typedef integral_constant<bool, false> false_type;
-	// typedef integral_constant<bool, true> true_type;
-
-	// template <typename T> struct is_integral :			public false_type {};
-	// template <> struct is_integral<bool> :				public true_type {};
-	// template <> struct is_integral<char> :				public true_type {};
-	// template <> struct is_integral<wchar_t> :			public true_type {};
-	// template <> struct is_integral <signed char> :		public true_type {};
-	// template <> struct is_integral <short> :			public true_type {};
-	// template <> struct is_integral <int> :				public true_type {};
-	// template <> struct is_integral <long> :				public true_type {};
-	// template <> struct is_integral <unsigned char> :	public true_type {};
-	// template <> struct is_integral <unsigned short> :	public true_type {};
-	// template <> struct is_integral <unsigned int> :		public true_type {};
-	// template <> struct is_integral <unsigned long> :	public true_type {};
-
-	// template <typename, typename> struct are_same : public false_type {};
-	// template <typename T> struct are_same<T, T> : public true_type {};
-
-	template <class T>
-	void swap (T &a, T&b) {
-		T c(a);
-		a = b;
-		b = c;
-	}
 
 	template <class InputIterator1, class InputIterator2>
 	bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2)

@@ -7,10 +7,11 @@ namespace ft
 	template <typename T, typename Alloc>
 	ft::vector<T, Alloc>::vector(const allocator_type &alloc)
 			:	
+				_size(0),
 				_capacity(0),
 				_allocator(alloc),
-				_start(NULL),
-				_end(NULL)
+				_pointer(NULL)
+				// _end(NULL)
 	{
 		if (M_DEBUG)
 			std::cout << "[VECTOR] Default Constructor has been invoked" << std::endl;
@@ -21,48 +22,47 @@ namespace ft
 	template <typename T, typename Alloc>
 	ft::vector<T, Alloc>::vector(size_type n, const value_type &val, const allocator_type &alloc) 
 			:	
-				_capacity(0),
+				_size(n),
+				_capacity(n),
 				_allocator(alloc),
-				_start(NULL),
-				_end(NULL)
+				_pointer(NULL)
 	{
 		if (M_DEBUG)
 			std::cout << "[VECTOR] Filled constructor has been invoked" << std::endl;
-		assign(n, val);
-		// _start = _allocator.allocate(n);
-		// _end = _start;
-		// while (n--)
-		// {
-		// 	_allocator.construct(_end, val);
-		// 	_end++;
-		// }
+		//allocates memory for the vector
+		_pointer = _allocator.allocate(n);
+		//initializes each elem with value <val> by calling "construct"
+		for (size_type i = 0; i < n; ++i)
+			_allocator.construct(&(_pointer[i]), val);
 	}
 
 	//------------------Range constructor------------------//
 	//constructs container with as many elems as range [first,last] with each elem constructed from its elem in that range
+	//enable_if is used to ensure constructor is only enabled when input itr is not an integral type
+	//This is necessary because integral types can be interpreted as integral values and lead to unexpected behavior
 	template <typename T, typename Alloc>
 	template <typename InputIterator>
-	ft::vector<T, Alloc>::vector(InputIterator first, InputIterator last, const allocator_type &alloc, typename ft::enable_if<!std::is_integral<InputIterator>::value>::type*) 
+	ft::vector<T, Alloc>::vector(InputIterator first, InputIterator last, const allocator_type &alloc, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type*) 
 			:	
+				_size(0),
 				_capacity(0),
-				_allocator(alloc),
-				_start(NULL),
-				_end(NULL)
+				_allocator(alloc)
 	{
 		if (M_DEBUG)
 			std::cout << "[VECTOR] Range constructor has been invoked" << std::endl;
-		// _start = _allocator.allocate(last.base() - first.base());
-		// _end = _start;
-		// while (first != last)
-		// {
-		// 	_allocator.construct(_end, *first);
-		// 	_end++;
-		// 	first++;
-		// }
-
-		assign(first, last);
-		
-
+		InputIterator tmp = first;
+		//calculated the size of range 
+		while (tmp != last)
+		{
+			_size++;
+			tmp++;
+		}
+		//allocates memory for vector and constructs each elem using input iter
+		_pointer = _allocator.allocate(_size);
+		for (size_type i = 0; i < _size; ++i)
+			_allocator.construct(&(_pointer[i]), *first++);
+		//sets capacity to be equal to its size
+		_capacity = _size;
 	}
 	//------------------Destructor------------------//
 	template <typename T, typename Alloc>
@@ -70,21 +70,21 @@ namespace ft
 		if (M_DEBUG)
 			std::cout << "[vECTOR] Destructor has been invoked" << std::endl;
 		clear();
-		_allocator.deallocate(_start, capacity());
+		_allocator.deallocate(_pointer, capacity());
 	}
 
 	// ------------------Copy Constructor------------------//
 	template <typename T, typename Alloc>
-	ft::vector<T, Alloc>::vector(const vector &x, const allocator_type &alloc)
-			:
-				_capacity(0),
-				_allocator(alloc),
-				_start(NULL),
-				_end(NULL)
+	ft::vector<T, Alloc>::vector(const vector &x)
+			:	_size(x._size),
+				_capacity(x._capacity),
+				_allocator(x._allocator)
 	{
 		if (M_DEBUG)
 			std::cout << "[vECTOR] Copy constructor has been invoked" << std::endl;
-		assign(x.begin(), x.end());
+		_pointer = _allocator.allocate(_capacity);
+		for (size_type i = 0; i < _size; i++)
+			_allocator.construct(&(_pointer[i]), x[i]);
 	}
 
 
@@ -111,14 +111,14 @@ namespace ft
 	typename ft::vector<T, Alloc>::iterator ft::vector<T, Alloc>::begin() {
 		if (M_DEBUG)
 			std::cout << "begin() has been invoked" << std::endl;
-		return iterator(_start);
+		return iterator(_pointer);
 	}
 
 	template <typename T, typename Alloc>
 	typename ft::vector<T, Alloc>::const_iterator ft::vector<T, Alloc>::begin() const {
 		if (M_DEBUG)
 			std::cout << "begin() const has been invoked" << std::endl;
-		return const_iterator (_start);
+		return const_iterator (_pointer);
 	}
 
 	//////////////////////////////////////////////
@@ -128,14 +128,14 @@ namespace ft
 	typename ft::vector<T, Alloc>::iterator ft::vector<T, Alloc>::end() {
 		if (M_DEBUG)
 			std::cout << "end() has been invoked" << std::endl;
-		return iterator(_end);
+		return iterator(_pointer + _size);
 	}
 
 	template <typename T, typename Alloc>
 	typename ft::vector<T, Alloc>::const_iterator ft::vector<T, Alloc>::end() const {
 		if (M_DEBUG)
 			std::cout << "end() const has been invoked" << std::endl;
-		return const_iterator (_end);
+		return const_iterator (_pointer + _size);
 	}
 
 	//////////////////////////////////////////////
@@ -145,14 +145,14 @@ namespace ft
 	typename ft::vector<T, Alloc>::reverse_iterator ft::vector<T, Alloc>::rbegin() {
 		if (M_DEBUG)
 			std::cout << "rbegin() has been invoked" << std::endl;
-		return reverse_iterator(_end);
+		return reverse_iterator(_pointer + _size);
 	}
 
 	template <typename T, typename Alloc>
 	typename ft::vector<T, Alloc>::const_reverse_iterator ft::vector<T, Alloc>::rbegin() const {
 		if (M_DEBUG)
 			std::cout << "rbegin() const has been invoked" << std::endl;
-		return const_reverse_iterator(_end);
+		return const_reverse_iterator(_pointer + _size);
 	}
 
 	//////////////////////////////////////////////
@@ -162,14 +162,14 @@ namespace ft
 	typename ft::vector<T, Alloc>::reverse_iterator ft::vector<T, Alloc>::rend() {
 		if (M_DEBUG)
 			std::cout << "rend() has been invoked" << std::endl;
-		return reverse_iterator(begin());
+		return reverse_iterator(_pointer);
 	}
 
 	template <typename T, typename Alloc>
 	typename ft::vector<T, Alloc>::const_reverse_iterator ft::vector<T, Alloc>::rend() const {
 		if (M_DEBUG)
 			std::cout << "rend() const has been invoked" << std::endl;
-		return const_reverse_iterator (begin());
+		return const_reverse_iterator (_pointer);
 	}
 
 	//////////////////////////////////////////////////////
@@ -183,14 +183,14 @@ namespace ft
 	typename ft::vector<T, Alloc>::reference   ft::vector<T, Alloc>::operator[](size_type n) {
 	if (M_DEBUG)
 			std::cout << "[vECTOR] operator[] has been invoked" << std::endl;
-		return *(_start + n);
+		return *(_pointer + n);
 	}
 
 	template <typename T, typename Alloc>
 	typename ft::vector<T, Alloc>::const_reference ft::vector<T, Alloc>::operator[](size_type n) const {
 		if (M_DEBUG)
 			std::cout << "operator[] has been invoked" << std::endl;
-		return *(_start + n);
+		return *(_pointer + n);
 	}
 
 	//////////////////////////////////////////////
@@ -198,26 +198,26 @@ namespace ft
 	//////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::vector<T, Alloc>::reference ft::vector<T, Alloc>::at(size_type n) {
-		if (_start == NULL)
+		if (_pointer == NULL)
 			throw std::out_of_range("accesing empty vector");
 		if (n >= size()) {
 			throw std::out_of_range("index is out of range in at()");
 		}
 		if (M_DEBUG)
 			std::cout << "at() has been invoked" << std::endl;
-		return *(_start + n);
+		return (_pointer[n]);
 	}
 
 	template <typename T, typename Alloc>
 	typename ft::vector<T, Alloc>::const_reference ft::vector<T, Alloc>::at(size_type n) const {
-		if (_start == NULL)
+		if (_pointer == NULL)
 			throw std::out_of_range("accesing empty vector");
 		if (n >= size()) {
 			throw std::out_of_range("index is out of range in at()");
 		}
 		if (M_DEBUG)
 			std::cout << "at() const has been invoked" << std::endl;
-		return *(_start + n);
+		return (_pointer[n]);
 	}
 
 	//////////////////////////////////////////////
@@ -227,22 +227,22 @@ namespace ft
 	typename ft::vector<T, Alloc>::reference ft::vector<T, Alloc>::front() {
 		if (size() == 0)
 			std::out_of_range("can't call empty container with front()");
-		if (!_start)
+		if (!_pointer)
 			std::out_of_range("can't call empty container with front()");
 		if (M_DEBUG)
 			std::cout << "front() has been invoked" << std::endl;
-		return (*_start);
+		return (*_pointer);
 	}
 
 	template <typename T, typename Alloc>
 	typename ft::vector<T, Alloc>::const_reference ft::vector<T, Alloc>::front() const {
 		if (size() == 0)
 			std::out_of_range("can't call empty container with front()");
-		if (!_start)
+		if (!_pointer)
 			std::out_of_range("can't call empty container with front()");
 		if (M_DEBUG)
 			std::cout << "front() const has been invoked" << std::endl;
-		return (*_start);
+		return (*_pointer);
 	}
 
 	//////////////////////////////////////////////
@@ -252,22 +252,22 @@ namespace ft
 	typename ft::vector<T, Alloc>::reference ft::vector<T, Alloc>::back() {
 		if (size() == 0)
 			std::out_of_range("can't call back() if size == 0");
-		if (!_end)
+		if (!_pointer)
 			std::out_of_range("can't call back() if the container is empty");
 		if (M_DEBUG)
 			std::cout << "back() has been invoked" << std::endl;
-		return (*(_end - 1));
+		return (_pointer[_size - 1]);
 	}
 
 	template <typename T, typename Alloc>
 	typename ft::vector<T, Alloc>::const_reference ft::vector<T, Alloc>::back() const {
 		if (size() == 0)
 			std::out_of_range("ca't call back() if size == 0");
-		if (!_end)
+		if (!_pointer)
 			std::out_of_range("can't call back() if the container is empty");
 		if (M_DEBUG)
 			std::cout << "back() const has been invoked" << std::endl;
-		return (*(_end - 1));
+		return (_pointer[_size - 1]);
 	}
 
 	//////////////////////////////////////////////
@@ -277,14 +277,14 @@ namespace ft
 	typename ft::vector<T, Alloc>::value_type* ft::vector<T, Alloc>::data() {
 		if (M_DEBUG)
 			std::cout << "data() has been invoked" << std::endl;
-		return (*_start);
+		return (_pointer);
 	}
 
 	template <typename T, typename Alloc>
 	const typename ft::vector<T, Alloc>::value_type* ft::vector<T, Alloc>::data() const {
 		if (M_DEBUG)
 			std::cout << "data() const has been invoked" << std::endl;
-		return (*_start);
+		return (_pointer);
 	}
 
 	//////////////////////////////////////////////////////
@@ -298,7 +298,7 @@ namespace ft
 	typename ft::vector<T, Alloc>::size_type ft::vector<T, Alloc>::size() const {
 		if (M_DEBUG)
 			std::cout << "size() const has been invoked" << std::endl;
-		return (_end - _start);
+		return (_size);
 	}
 
 	/////////////////////////////////////////////////////
@@ -316,28 +316,26 @@ namespace ft
 	////////////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	void ft::vector<T, Alloc>::resize(size_type n, value_type value) {
-		size_type prev_size = size();
 		if (n > max_size())
 			throw std::length_error("n more than max_size() in resize()");
-		if (n < prev_size) {
-			for (size_type i = 0; i < prev_size; i++)
-			{
-				_allocator.destroy(_start + i);
-			}
-			_end = _start + n;
-		}
-		else
+		if (n > _capacity)
 		{
-			if (n > 2 * _capacity)
-				reserve(n);
-			else if (n > _capacity)
-				reserve(2 * _capacity);
-			for (; prev_size < n; prev_size++)
-			{
-				_allocator.construct(_start + prev_size, value);
-			}
-			_end = _start + n;
+			size_type tmp_cap = _capacity;
+			while(tmp_cap < n)
+				tmp_cap *= 2;
+			reallocate(tmp_cap, value);
 		}
+		else if (n > _size)
+		{
+			for (size_type i = _size; i < n; ++i)
+				_allocator.construct(&(_pointer[i]), value);
+		}
+		else if (n < _size)
+		{
+			for (size_type i = n - 1; i < _size; ++i)
+				_allocator.destroy(&(_pointer[i]));
+		}
+		_size = n;
 	}
 
 	//////////////////////////////////////////////
@@ -345,7 +343,7 @@ namespace ft
 	//////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	bool ft::vector<T, Alloc>::empty() const {
-		return (_start == _end);
+		return (_size == 0);
 	}
 
 	///////////////////////////////////////////////////////////////////////
@@ -361,22 +359,24 @@ namespace ft
 	///////////////////////////////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	void ft::vector<T, Alloc>::reserve(size_type n) {
-		size_type previous_size = size();
 		if (n > max_size())
 		{
 			throw std::length_error("n is bigger than max_size()");
 		}
 		if (n > _capacity)
 		{
+			//allocates new memory
 			pointer tmp = _allocator.allocate(n);
-			for (size_type i = 0; i < previous_size; i++)
+			//loops through existing ones, constructs new elems in new memory block by copying the old ones and destroys the old elems
+			for (size_type i = 0; i < _size; i++)
 			{
-				_allocator.construct(tmp + i, *(_start + i));
-				_allocator.destroy(_start + i);
+				_allocator.construct(tmp + i, *(_pointer + i));
+				_allocator.destroy(_pointer + i);
 			}
-			_allocator.deallocate(_start, _capacity);
-			_start = tmp;
-			_end = _start + previous_size;
+			//deallocates old memory
+			_allocator.deallocate(_pointer, _capacity);
+			//updates pointer and cap to the new memory
+			_pointer = tmp;
 			_capacity = n;
 		}
 	}
@@ -392,23 +392,6 @@ namespace ft
 	/////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	void ft::vector<T, Alloc>::assign(size_type n, const value_type &init_value) {
-		// if (n > max_size())
-		// 	throw std::length_error("EXCEPTION : assign() size is bigger than max_size()");
-		// if (n == 0)
-		// 	return ;
-		// if (n > _capacity)
-		// {
-		// 	_allocator.deallocate(_start, _capacity);
-		// 	_start = _allocator.allocate(n);
-		// 	// _capacity = _start + n;
-		// 	_end = _start + n;
-
-		// }
-		// for (size_type i = 0; i < n; i++)
-		// {
-		// 	_allocator.construct(_start + i, init_value);
-		// }
-		// 	_end = _start + n;	
 		clear();
 		reserve(n);
 		insert(begin(), n, init_value);
@@ -422,11 +405,13 @@ namespace ft
 	void ft::vector<T, Alloc>::assign(InputIterator first, InputIterator last, typename ft::enable_if<!std::is_integral<InputIterator>::value>::type*) {
 		clear();
 		reserve(distance_iterator(last, first));
-		// while (first != last)
-		// {
-		// 	push_back(*first);
-		// 	first++;
-		// }
+
+		while (first != last)
+		{
+			push_back(*first);
+			first++;
+		}
+
 		insert(begin(), first, last);
 	}
 
@@ -435,13 +420,12 @@ namespace ft
 	/////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	void ft::vector<T, Alloc>::clear() {
-		size_type ssize = size();
-		for (size_type i = 0; i < ssize; i++)
+		for (size_type i = 0; i < _size; i++)
 		{
 			
-			_allocator.destroy(_end);
-			_end--;
+			_allocator.destroy(&(_pointer[i]));
 		}
+			_size = 0;
 	}
 
 	/////////////////////////////////////////////
@@ -449,33 +433,33 @@ namespace ft
 	/////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	void ft::vector<T, Alloc>::swap(vector &x) {
-		
-		ft::swap(_allocator, x._allocator);
-		ft::swap(_start, x._start);
-		ft::swap(_end, x._end);
-		ft::swap(_capacity, x._capacity);
-	}
+		pointer tmp_pointer = _pointer;
+		allocator_type tmp_allocator = _allocator;
+		size_type tmp_size = _size;
+		size_type tmp_capacity = _capacity;
 
-	// template <typename T, typename Alloc>
-	// void ft::vector<T, Alloc>::swap(vector<T, Alloc>&x, vector<T, Alloc>&y) {
-	// 	x.swap(y);
-	// }
+		_pointer = x._pointer;
+		_allocator = x._allocator;
+		_size = x._size;
+		_capacity = x._capacity;
+
+		x._pointer = tmp_pointer;
+		x._allocator = tmp_allocator;
+		x._size = tmp_size;
+		x._capacity = tmp_capacity;
+	}
 
 	/////////////////////////////////////////////
 	//push_back//////////////////////////////////
 	/////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	void ft::vector<T, Alloc>::push_back(const value_type &value) {
-		// size_type prev_size = size();
-		// if (prev_size > max_size())
-		// 	std::length_error("length error in push_back()");
-		// if (prev_size == _capacity)
-		// {
-		// 	resize(prev_size + 1, value);
-		// }
-		// _allocator.construct(_start + prev_size++, value);
-		// // _end++;
-		insert(_end, value);
+		if (!_capacity)
+			reallocate(1);
+		if (_size == _capacity)
+			reallocate(_capacity * 2);
+		_allocator.construct(_pointer + _size, value);
+		++_size;
 	}
 
 	/////////////////////////////////////////////
@@ -483,10 +467,10 @@ namespace ft
 	/////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	void ft::vector<T, Alloc>::pop_back() {
-		if (_end <= _start)
+		if (!_size)
 			return ;
-		_allocator.destroy(_end);
-		--_end;
+		_allocator.destroy(&(_pointer[_size - 1]));
+		--_size;
 	}
 
 	/////////////////////////////////////////////
@@ -494,102 +478,150 @@ namespace ft
 	/////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::vector<T, Alloc>::iterator ft::vector<T, Alloc>::insert(iterator position, const value_type &value) {
-		size_type diff = position - begin();
-		insert(position, 1, value);
-		return (begin() + diff);
-		// size_type prev_size = size();
-		// size_type prev_capacity = capacity();
-		// pointer tmp0;
-		// pointer tmp1 = _start;
-		// size_type i = 0;
-		
-		// if (position > end() || position < begin())
-		//  	std::logic_error("EXCEPTION : insert() error");
-		// // difference_type position_diff = position - iterator(begin());
-		// if (prev_size > prev_capacity && _capacity * 2 <= max_size())
-		// {
-		// 	tmp0 = _allocator.allocate(_capacity * 2);
-		// 	_capacity = _capacity * 2;
-		// }
-		// else if (_capacity * 2 > max_size())
-		// 	std::length_error("EXCEPTION : longer than max_size()");
-		// else if (prev_capacity > prev_size)
-		// 	tmp0 = _allocator.allocate(_capacity);
-		// while (_start + i != position.base())
-		// {
-		// 	std::cout << "hey\n";
-		// 	_allocator.construct(tmp0 + i, *(_start + i));
-		// 	_allocator.destroy(_start + i);
-		// 	i++;
-		// }
-		// _allocator.construct(tmp0 + i, value);
-		// tmp1 = tmp0 + i;
-		// i++;
-		// while (_start + i - 1 != _end)
-		// {
-		// 	_allocator.construct(tmp0 + i, *(_start + i - 1));
-		// 	_allocator.destroy(_start + i - 1);
-		// 	i++;
-		// }
-		// _allocator.deallocate(_start, prev_capacity);
-		// tmp0 = _start;
-		// _end = _start + prev_size + 1;
-		// return (iterator(tmp1));
+		if (!_pointer)
+		{
+			_pointer = _allocator.allocate(1);
+			_allocator.construct(&_pointer[0], value);
+			_size = 1;
+			_capacity = 1;
+			return iterator(&_pointer[0]);
+		}
+		size_type counter = 0;
+		for (iterator it = begin(); it != position; ++it)
+			++counter;
+		if (_size == _capacity)
+		{
+			if (!_capacity)
+				reallocate(1);
+			else
+				reallocate(_capacity * 2);
+		}
+		//copies each element to the next higher index and destroys original element. This creates empty slot at pos itr.
+		for (size_type i = _size; i > counter; --i)
+		{
+			_allocator.construct(&(_pointer[i]), _pointer[i - 1]);
+			_allocator.destroy(&(_pointer[i - 1]));
+		}
+		//constructs new elem at pos itr using given value, increments size and returns itr to inserted element
+		_allocator.construct(&(_pointer[counter]), value);
+		++_size;
+		return (iterator(&(_pointer[counter])));
 	}
 
 	template <typename T, typename Alloc>
 	void ft::vector<T, Alloc>::insert(iterator position, size_type n, const value_type &val) {
-		size_type prev_size = size();
-		size_type prev_capacity = capacity();
-		pointer tmp0;
-		size_type i = 0;
-
-		if (position > end() || position < begin())
-			std::logic_error("EXCEPTION : insert() error");
-		if (n < 0 || n + prev_size > max_size())
-			std::length_error("EXCEPTION : insert() error");
-		if (prev_size + n > _capacity)
+		if (!_pointer)
 		{
-			if (_capacity + n > max_size())
-				std::length_error("EXCEPTION : insert() error : bigger than max_size()");
-			tmp0 = _allocator.allocate(_capacity + n);
-			_capacity = _capacity + n;
+			_pointer = _allocator.allocate(n);
+			for (size_type i = 0; i < n; ++i)
+				_allocator.construct(&_pointer[i], val);
+			_size = n;
+			_capacity = n;
+			return ;
 		}
-		else
+		size_type counter = 0;
+		for (iterator it = begin(); it != position; ++it)
+			++counter;
+		if (_size + n >= _capacity)
 		{
-			tmp0 = _allocator.allocate(_capacity);
+			if (!_capacity)
+				reallocate(n);
+			else
+				reallocate(_size + n);
 		}
-		while (_start + i != position.base())
+		//copy each elem 'n' positions to the right until elem at index 'count + n' is reached.
+		//this makes room for new elems to be inserted
+		for (size_type i = (_size + n - 1); i >= counter + n; --i)
 		{
-			_allocator.construct(tmp0 + i, *(_start + i));
-			_allocator.destroy(_start + i);
-			i++;
+			_allocator.construct(&(_pointer[i]), _pointer[i - n]);
+			_allocator.destroy(&(_pointer[i - n]));
 		}
-		for (size_type helper = n; helper > 0; --helper) {
-			_allocator.construct(tmp0 + i, val);
-			i++;
-		}
-		while (_start + i - n != _end)
-		{
-			_allocator.construct(tmp0 + i, *(_start + i - n));
-
-			_allocator.destroy(_start + i - n);
-			i++;
-		}
-		_allocator.deallocate(_start, prev_capacity);
-		_start = tmp0;
-		_end = _start + prev_size + n;
+		//construct 'n' copies of val startin from index 'counter'
+		for (size_type i = 0; i < n; ++i)
+			_allocator.construct(&(_pointer[counter + i]), val);
+		//update size by adding n;
+		_size += n;
 	}
 
 	template <typename T, typename Alloc>
 	template <typename InputIterator>
 	void ft::vector<T, Alloc>::insert(iterator position, InputIterator first, InputIterator last, typename ft::enable_if<!std::is_integral<InputIterator>::value>::type*) {
-		while (first != last)
+		if (first == last)
+			return;
+		size_type tmp_size = 0;
+		for (InputIterator tmp_it = first; tmp_it != last; tmp_it++)
+			tmp_size++;
+		pointer copy_start = NULL;
+		pointer copy_end = NULL;
+		size_type copy_capacity = 0;
+		pointer pointer_pos = position.base();
+		InputIterator it_first = first;
+		InputIterator it_last = last;
+		pointer tmp_pointer = _pointer;
+
+		if (_size + tmp_size >= _capacity)
 		{
-			position = insert(position, *first);
-			position++;
-			first++;
-		}
+			copy_capacity = _size + tmp_size;
+			if (_size + tmp_size > _capacity * 2)
+				copy_capacity = _size + tmp_size;
+			else
+				copy_capacity = _capacity * 2;
+			copy_start = _allocator.allocate(copy_capacity);
+			copy_end = copy_start;
+				try 
+				{
+					while(tmp_pointer != pointer_pos)
+					{
+						_allocator.construct(copy_end, *tmp_pointer);
+						_allocator.destroy(tmp_pointer);
+						copy_end++;
+						tmp_pointer++;
+					}
+					while (it_first != it_last)
+					{
+						_allocator.construct(copy_end, *it_first);
+						copy_end++;
+						it_first++;
+					}
+					while (tmp_pointer != (_pointer + _size))
+					{
+						_allocator.construct(copy_end, *tmp_pointer);
+						_allocator.destroy(tmp_pointer);
+						copy_end++;
+						tmp_pointer++;
+					}
+				}
+				catch (...)
+				{
+					while (copy_start != copy_end)
+						_allocator.destroy(copy_end--);
+					_allocator.destroy(copy_start);
+					_allocator.deallocate(copy_start, copy_capacity);
+					throw;
+				}
+				_allocator.deallocate(_pointer, _capacity);
+				_pointer = copy_start;
+				_capacity = copy_capacity;
+				_size += tmp_size;
+			}
+			else {
+				size_type pos_counter = 0;
+				for (iterator it = this->begin(); it != position; it++)
+					pos_counter++;
+				//shifts elems to the right by tmp_size positions to make room for new elems
+				//starts from last elem and moves backwards until it reaches the pos where new elems should be inserted
+				//constructs copy of prev elem shifted by tmp_szie and destroys prev element
+				for (size_type i = (_size + tmp_size - 1); i >= (pos_counter + tmp_size); i--)
+				{
+					_allocator.construct(&(_pointer[i]), _pointer[i - tmp_size]);
+					_allocator.destroy(&(_pointer[i - tmp_size]));
+				}
+				//constructs elems starting from pos specified by pos_counter and inserts each elem
+				for (size_type i = 0; i < tmp_size; i++)
+					_allocator.construct(&(_pointer[pos_counter + i]), *first++);
+				//increment size by tmp_size to reflect new_size of vector
+				_size += tmp_size;
+			}
 	}
 
 	/////////////////////////////////////////////
@@ -597,62 +629,11 @@ namespace ft
 	/////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	typename ft::vector<T, Alloc>::iterator ft::vector<T, Alloc>::erase(iterator position) {
-		// if (position > end() || position < begin())
-		// 	std::logic_error("EXCEPTION : erase() error : out of range!");
-		// pointer ptr = position.base();
-		// _allocator.destroy(ptr);
-		// iterator result(ptr);
-		// for (; ptr != _end; ptr++)
-		// {
-		// 	_allocator.construct(ptr, *(ptr + 1));
-		// 	_allocator.destroy(ptr + 1);
-		// }
-		// _end = ptr;
-		// return result;
 		return erase(position, position + 1);
-		// difference_type diff(position - (iterator)(begin()));
-		// for (size_type i = 0; diff + i + 1 < size(); i++) {
-		// 	_allocator.construct(_start + diff + i, *(_start + diff + i + 1));
-		// }
-		// _allocator.destroy(_start + size() - 1);
-		// _end -= 1;
-		// return iterator(_start + diff);
-	}
+		}
 
 	template <typename T, typename Alloc>
 	typename ft::vector<T, Alloc>::iterator ft::vector<T, Alloc>::erase(iterator first, iterator last) {
-		// if (first.base() > last.base())
-		// 	throw std::logic_error("EXCEPTION : first range iterator is more than last");
-		// if (!(first.base() >= _start && first.base() < _end) || !(last.base() >= _start && last.base() < _end))
-		// 	throw std::out_of_range("EXCEPTION : InputIter points outside of range of vector!");
-		// pointer tmp = _allocator.allocate(_capacity);
-		// pointer first_base = first.base();
-		// pointer last_base = last.base();
-		// size_type i = 0;
-		// size_type j;
-
-		// for (; _start + i != first_base; i++)
-		// {
-		// 	_allocator.construct(tmp + i, *(_start + i));
-		// 	_allocator.destroy(_start + i);
-		// }
-		// j = i;
-		// iterator out(tmp + i);
-		// for (; _start + i < last_base; i++)
-		// {
-		// 	_allocator.destroy(_start + i);
-		// }
-		// for (; _start + i != _end; i++)
-		// {
-		// 	_allocator.construct(tmp + j, *(_start + i));
-		// 	_allocator.destroy(_start + i);
-		// 	j++;
-		// }
-		// _allocator.deallocate(_start, _capacity);
-		// _start = tmp;
-		// _end = tmp + j;
-		// return out;
-
 		size_type diff_len = distance_iterator(last, first);
 		size_type rest_len = distance_iterator(end(), last);
 		for (size_type i = 0; i < diff_len; ++i)
@@ -664,26 +645,8 @@ namespace ft
 			first.base()[i] = last.base()[i];
 			_allocator.destroy(last.base() + i);
 		}
-		_end -= diff_len;
+		_size -= diff_len;
 		return first;
-		// if (size() == 0)
-			// std::cout << "error 4" << std::endl;
-
-		// std::cout << _end - _start << std::endl;
-			
-		// if (first.base() > last.base())
-			// std::cout << "error 1" << std::endl;
-
-		// if(first.base() >= _end)
-			// std::cout << "error 2.1" << std::endl;
-		// if (first.base() < _start)
-			// std::cout << "error 2.2" << std::endl;
-
-		// if(last.base() >= _end)
-			// std::cout << "error 3.1" << std::endl;
-		// if(last.base() < _start)
-			// std::cout << "error 3.2" << std::endl;
-
 	}
 
 
@@ -713,17 +676,32 @@ namespace ft
 		return distance;
 	}
 
-	// template <typename T, typename Alloc>
-	// ft::vector<T, Alloc> ft::vector<T, Alloc>::operator==(const ft::vector<T, Alloc> &lhs, const ft::vector<T, Alloc> &rhs) {
-		
-	// }
-
-	// template <typename T, typename Alloc>
-	// ft::vector<T, Alloc> ft::vector<T, Alloc>::operator==(const ft::vector<T, Alloc> &lhs, const ft::vector<T, Alloc> &rhs) {
-
-	// }
+	template <typename T, typename Alloc>
+	void ft::vector<T, Alloc>::reallocate(size_type new_capacity, value_type value)
+	{
+		//allocate new block of size new_capacity
+		pointer tmp = _allocator.allocate(new_capacity);
+		//constructs copis of them in new memory block
+		for (size_type i = 0; i < _size; ++i)
+			_allocator.construct(&(tmp[i]), _pointer[i]);
+		//if new_cap is greater than size then it constructs remaining ones with value
+		for (size_type i = _size; i < new_capacity; ++i)
+			_allocator.construct(&(tmp[i]), value);
+		for (size_type i = 0; i < _size; ++i)
+			_allocator.destroy(&(_pointer[i]));
+		_allocator.deallocate(_pointer, _capacity);
+		_pointer = tmp;
+		_capacity = new_capacity;
+	}
 }
 
-
+namespace std
+{
+	template <class T, class Alloc>
+	void swap(ft::vector<T, Alloc>&lhs, ft::vector<T, Alloc>&rhs)
+	{
+		lhs.swap(rhs);
+	}
+}
 
 

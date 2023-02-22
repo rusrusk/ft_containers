@@ -1,7 +1,6 @@
 #ifndef ITERATOR_TRAITS_HPP
 # define ITERATOR_TRAITS_HPP
 
-// #include <iterator>
 #include <iostream>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -11,24 +10,9 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace ft
 {
-	// template<
-	// 	class Category,
-	// 	class T,
-	// 	class Distance = std::ptrdiff_t,
-	// 	class Pointer = T*,
-	// 	class Reference = T&
-	// >
-	// // std::iterator is base class provided to simplify definitions of the required types for iterators
-
-	// struct iterator {
-	// 	typedef		Category		iterator_category;
-	// 	typedef		T				value_type;
-	// 	typedef		Distance		difference_type;
-	// 	typedef		Pointer			pointer;
-	// 	typedef		Reference		reference;
-	// };
 
 	//ITERATOR CATEGORIES/TAGS. Each tag is an empty type
+	//iterator tags are used to indicate the capabilities of iterators
 	struct input_iterator_tag{};
 	struct output_iterator_tag {};
 	struct forward_iterator_tag			: public input_iterator_tag {};
@@ -36,12 +20,14 @@ namespace ft
 	struct random_access_iterator_tag 	: public bidirectional_iterator_tag {};
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //***ITERATOR TRAITS***//////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//template struct is used to extract info about iterator. It has 5 typedefs.
+	//These 5 typedefs provide standard way to access properties of iterator, regardless of iterator type.
+	//Template struct is specialized for ptrs and const_ptrs.
 	template<class Iterator>
 	struct iterator_traits {
 		typedef typename Iterator::difference_type			difference_type;		//diff between 2 iterators
@@ -83,10 +69,5 @@ namespace ft
 	
 
 }
-
-
-
-
-
 
 #endif
