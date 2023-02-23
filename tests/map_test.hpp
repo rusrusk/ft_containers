@@ -314,7 +314,7 @@ class MapTest : Test
 			std::vector<int> result;
 			std::map<int, int> map;
 			int limit = LIMIT;
-			for (int i = 0, j = -limit; i < limit; ++i, --j)
+			for (int i = 0, j = -limit; i < 400; ++i, --j)
 				map.insert(std::make_pair(i, j));
 			std::map<int, int>::iterator it = map.begin();
 			result.push_back(it->second);
@@ -331,7 +331,7 @@ class MapTest : Test
 			std::vector<int> result;
 			ft::map<int, int> map;
 			int limit = LIMIT;
-			for (int i = 0, j = -limit; i < limit; ++i, --j)
+			for (int i = 0, j = -limit; i < 400; ++i, --j)
 				map.insert(ft::make_pair(i, j));
 			ft::map<int, int>::iterator it = map.begin();
 			result.push_back(it->second);

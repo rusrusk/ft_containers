@@ -9,7 +9,7 @@ namespace ft {
 				//set of type aliases for RI class template.
 				//RI is a wrapper around an iterator that iterates over a range in reverse order.
 				typedef 			IteratorType											iterator_type;		//type of iterator being wrapped by RI
-				typedef typename	ft::random_access_iterator_tag							iterator_category;	//RI can be used with RAI
+				typedef typename	std::random_access_iterator_tag							iterator_category;	//RI can be used with RAI
 				typedef typename	ft::iterator_traits<iterator_type>::value_type			value_type;			//type of value being pointed to by iterator
 				typedef typename	ft::iterator_traits<iterator_type>::difference_type		difference_type;	//represenet diff between 2 iterators.
 				typedef typename	ft::iterator_traits<iterator_type>::pointer				pointer;			//pointer to the value type

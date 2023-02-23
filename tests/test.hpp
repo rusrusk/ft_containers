@@ -43,25 +43,23 @@ class Test {
 			}
 
 			void launch_test(std::vector<int> test_ft(), std::vector<int> test_std(), std::string test_name) {
-				time_t time1;
-				time_t time2;
 				std::cout << COLOR_BOLD_BLUE << std::left << std::setw(20) << test_name << END << "|";
-				// set_start();
-				g_start1 = timer();
+				set_start();
+				// g_start1 = timer();
 				std::vector<int> ft_result = test_ft();
-				// set_end();
-				g_end1 = timer();
+				set_end();
+				// g_end1 = timer();
 				get_time_result();
-				time1 = g_end1 - g_start1;
-				time2 = g_end2 - g_start2;
-				std::cout << "<ft> time : " << std::setw(4) << std::to_string(time1) + "ms" << '|';
-				// set_start();
+				// time1 = g_end1 - g_start1;
+				// time2 = g_end2 - g_start2;
+				std::cout << "<ft> time : " << std::setw(4) << std::to_string(end - start) + "ms" << '|';
+				set_start();
 				g_start2 = timer();
 				std::vector<int> std_result = test_std();
-				// set_end();
+				set_end();
 				g_start2 = timer();
 				get_time_result();
-				std::cout << " <std> time : " << std::setw(4) << std::to_string(time1) + "ms";
+				std::cout << " <std> time : " << std::setw(4) << std::to_string(end - start) + "ms";
 				std::cout << "| result comparisation: " << (ft_result == std_result ? "✅ " : "❌ ") << std::endl;
 			}
 

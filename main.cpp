@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iterator>
 #include <vector>
 #include "containers/vector.hpp"
 #include "colors.hpp"
@@ -10,6 +11,7 @@
 #include "containers/binary_search_tree.hpp"
 #include <map>
 #include "containers/map.hpp"
+// #include "test.hpp"
 
 
 // template<typename T>
@@ -80,7 +82,12 @@ int main () {
 
 	MapTest Map;
 	Map.launch_all_tests();
+	
 
 	// StackTest Stack;
 	// Stack.launch_all_tests();
+
+	// ft::vector<Test> vec;
+	// Test	a;
+	// vec.push_back(a);
 }

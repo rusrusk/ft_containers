@@ -85,8 +85,6 @@ class map {
     map(InputIt first, InputIt last, const Compare& comp = Compare(),
         const Alloc& alloc = Alloc())
         : _map_compare(comp), _map_allocator(alloc) {
-        // InputIt tmp = first;
-        // while (tmp != last) insert(*tmp++);
         for (; first != last; first++) this->_root.insertNode(*first);
     }
 
@@ -235,6 +233,7 @@ class map {
         iterator it = find(value.first);
         if (it != end()) return (it);
         return (iterator(_root.insertNode(value), _root._bst_root));
+     
     }
 
     //---------------------------insert()

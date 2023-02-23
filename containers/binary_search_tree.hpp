@@ -134,28 +134,192 @@ class BST {
     }
 
     node_pointer insertNode(const value_type& data) {
-        if (_bst_root == NULL) {
-            _bst_root = createNewNode(data);
-            return (_bst_root);
-        }
-        node_pointer found = searchForKey(data.first);
-        node_pointer tmp = NULL;
-        if (found) return (found);
-        found = _bst_root;
-        while (found != NULL) {
-            tmp = found;
-            if (_bst_compare(data.first, found->data.first))
-                found = found->left;
+        //start at root of tree
+        //if tree is empty, create new node and set it as root
+    //     if (_bst_root == NULL)
+    //     {
+    //         _bst_root = createNewNode(data);
+    //         return _bst_root;
+    //     }
+    //     //otherwise compare key of newelem to key of curr node
+    //     node_pointer tmp = _bst_root;
+    //     while (true)
+    //     {
+    //         //if key of newelem is less than key of curr node, go left
+    //         if (data.first < tmp->data.first)
+    //         {
+    //             if (tmp->left == NULL)
+    //             {
+    //                 tmp->left = createNewNode(data, tmp);
+    //                 return tmp->left;
+    //             }
+    //             else
+    //                 tmp = tmp->left;
+    //         }
+    //         //if key of newelem is less than key of curr node, go right
+    //         else if (data.first > tmp->data.first)
+    //         {
+    //             //creating new node and attaching to leaf node as the left or right child, dependin on comparison
+    //             if (tmp->right == NULL)
+    //             {
+    //                 tmp->right = createNewNode(data, tmp);
+    //                 return tmp->right;
+    //             }
+    //             else
+    //                 tmp = tmp->right;
+    //         }
+    //         //if equal, elem is already in the tree and no further action is required
+    //         else
+    //             return tmp;
+    //     }
+    // }
+
+    //     if (_bst_root == NULL) {
+    //         _bst_root = createNewNode(data);
+    //         return _bst_root;
+    //     }
+    //     node_pointer found = searchForKey(data.first); //<-- do i need this? insertNode only called if key is not found, i might avoid redundant traversal
+    //     if (found != NULL) {
+    //         return found;
+    //     }
+    //     node_pointer parent = NULL;
+    //     node_pointer current = _bst_root;
+    //     while (current != NULL) {
+    //         parent = current;
+    //         if (_bst_compare(data.first, current->data.first)) {
+    //             current = current->left;
+    //         } else {
+    //             current = current->right;
+    //         }
+    //     }
+    //     node_pointer newNode = createNewNode(data, parent);
+    //     if (_bst_compare(data.first, parent->data.first)) {
+    //         parent->left = newNode;
+    //     } else {
+    //         parent->right = newNode;
+    //     }
+    //     return newNode;
+    // }
+        //here i directly insert newnode at correct position, without need for additional call searchForKey.
+        //also i use iterative approach instead of recursive one, and check if tree is empty to avoid unnecessary comparison when inserting root node
+        node_pointer parent = NULL;
+        node_pointer curr = _bst_root;
+        while (curr != NULL)
+        {
+            parent = curr;
+            if (_bst_compare(data.first, curr->data.first))
+                curr = curr->left;
+            else if (_bst_compare(curr->data.first, data.first))
+                curr = curr->right;
             else
-                found = found->right;
+                return curr;
         }
-        found = createNewNode(data, tmp);
-        if (_bst_compare(data.first, tmp->data.first))
-            tmp->left = found;
+        node_pointer newNode = createNewNode(data, parent);
+        if (parent == NULL)
+            _bst_root = newNode;
+        else if (_bst_compare(data.first, parent->data.first))
+            parent->left = newNode;
         else
-            tmp->right = found;
-        return (found);
+            parent->right = newNode;
+        return newNode;
     }
+
+    // node_pointer insertNode(const value_type& data) {
+    // node_pointer parent = NULL;
+    // node_pointer curr = _bst_root;
+    // while (curr != NULL)
+    // {
+    //     parent = curr;
+    //     if (_bst_compare(data.first, curr->data.first))
+    //         curr = curr->left;
+    //     else if (_bst_compare(curr->data.first, data.first))
+    //         curr = curr->right;
+    //     else
+    //         return curr;
+    // }
+    // node_pointer newNode = createNewNode(data, parent);
+    // if (parent == NULL)
+    //     _bst_root = newNode;
+    // else if (_bst_compare(data.first, parent->data.first))
+    //     parent->left = newNode;
+    // else
+    //     parent->right = newNode;
+    // // AVL balancing
+    // balanceTree(newNode);
+    // return newNode;
+    // }
+    
+
+    // void balanceTree(node_pointer node) {
+    //     while (node != NULL) {
+    //         int balanceFactor = getBalanceFactor(node);
+    //         if (balanceFactor > 1) {
+    //             if (getBalanceFactor(node->left) < 0) {
+    //                 rotateLeft(node->left);
+    //             }
+    //             rotateRight(node);
+    //         } else if (balanceFactor < -1) {
+    //             if (getBalanceFactor(node->right) > 0) {
+    //                 rotateRight(node->right);
+    //             }
+    //             rotateLeft(node);
+    //         }
+    //         node = node->parent;
+    //     }
+    // }
+
+    // int getBalanceFactor(node_pointer node) {
+    //     int leftHeight = getHeight(node->left);
+    //     int rightHeight = getHeight(node->right);
+    //     return leftHeight - rightHeight;
+    // }
+
+    // int getHeight(node_pointer node) {
+    //     if (node == NULL) {
+    //         return 0;
+    //     } else {
+    //         int leftHeight = getHeight(node->left);
+    //         int rightHeight = getHeight(node->right);
+    //         return (leftHeight > rightHeight) ? leftHeight + 1 : rightHeight + 1;
+    //     }
+    // }
+
+    // void rotateLeft(node_pointer node) {
+    //     node_pointer rightChild = node->right;
+    //     rightChild->parent = node->parent;
+    //     if (node->parent == NULL) {
+    //         _bst_root = rightChild;
+    //     } else if (node == node->parent->left) {
+    //         node->parent->left = rightChild;
+    //     } else {
+    //         node->parent->right = rightChild;
+    //     }
+    //     node->right = rightChild->left;
+    //     if (rightChild->left != NULL) {
+    //         rightChild->left->parent = node;
+    //     }
+    //     node->parent = rightChild;
+    //     rightChild->left = node;
+    // }
+
+    // void rotateRight(node_pointer node) {
+    //     node_pointer leftChild = node->left;
+    //     leftChild->parent = node->parent;
+    //     if (node->parent == NULL) {
+    //         _bst_root = leftChild;
+    //     } else if (node == node->parent->left) {
+    //         node->parent->left = leftChild;
+    //     } else {
+    //         node->parent->right = leftChild;
+    //     }
+    //     node->left = leftChild->right;
+    //     if (leftChild->right != NULL) {
+    //         leftChild->right->parent = node;
+    //     }
+    //     node->parent = leftChild;
+    //     leftChild->right = node;
+    // }
+
 
     //---------------------------REMOVAL
     // METHODS---------------------------------------//
@@ -307,13 +471,28 @@ class BST {
     }
 
     bool sameKeyExists(const key_type& data, node_pointer m_root) const {
-        if (m_root == NULL) return false;
-        if (m_root->data.first == data)
-            return true;
-        else if (m_root->data.first <= data)
-            return sameKeyExists(data, m_root->right);
-        else
-            return sameKeyExists(data, m_root->left);
+        // if (m_root == NULL) return false;
+        // if (m_root->data.first == data)
+        //     return true;
+        // if (_bst_compare(data, m_root->data.first))
+        //     return sameKeyExists(data, m_root->left);
+        // else
+        //     return sameKeyExists(data, m_root->right);
+
+        //func repeatedly compares the key with the data in curr node and moves left or right depending on
+        //comparison result until it finds a matching node or reaches the end of the tree. This can avoid
+        //overhead of recursive function calls and reduce call stack depth because in previous implementation i used tail recursion
+        //meaning last operation is recursive call.
+        while (m_root != NULL)
+        {
+            if (m_root->data.first == data)
+                return true;
+            else if (_bst_compare(data, m_root->data.first))
+                m_root = m_root->left;
+            else
+                m_root = m_root->right;
+        }
+        return false;
     }
 
     node_pointer searchForKey(const key_type& key) const {
@@ -328,6 +507,6 @@ class BST {
         return (tmp);
     }
 };
-};  // namespace ft
+};  
 
 #endif

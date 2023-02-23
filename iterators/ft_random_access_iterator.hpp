@@ -13,7 +13,7 @@ namespace ft
 	public :
 		//These are used to define behaviour of itr and are required by STL
 		typedef				IteratorType													iterator_type;
-		typedef typename	ft::random_access_iterator_tag									iterator_category;
+		typedef typename	std::random_access_iterator_tag									iterator_category;
 		typedef typename	ft::iterator_traits<iterator_type>::value_type					value_type;
 		typedef typename	ft::iterator_traits<iterator_type>::difference_type				difference_type;
 		typedef typename	ft::iterator_traits<iterator_type>::pointer						pointer;

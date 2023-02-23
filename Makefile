@@ -7,6 +7,7 @@ CFLAGS	=	-Wall -Werror -Wextra --std=c++98
 RM		=	rm -rf
 
 SRCS	=	main.cpp\
+			test.cpp
 
 OBJS	=	$(SRCS:cpp=o) #take the var value $(SRCS), which is a string composed of words separated by spaces, and for each word, replace suffix .c with .o
 
