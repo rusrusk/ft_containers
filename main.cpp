@@ -11,7 +11,6 @@
 #include "containers/binary_search_tree.hpp"
 #include <map>
 #include "containers/map.hpp"
-// #include "test.hpp"
 
 
 // template<typename T>
@@ -61,6 +60,7 @@
 
 // 	std::cout << std::string(30, 32) << COLOR_BOLD_RED << std::string(25, 32) << "RANGE CONSTRUCTORS" << END << std::endl;
 // 	std::cout << std::setw(30) << COLOR_GREEN << std::string(80, '-') << END << std::endl;
+	// std::iterator_traits<ft::vector<int>::iterator>	traits;
 // 	ft::Vector<int>range_constructor(10);
 // 	ft::Vector<int>iterate_through_range_constr(range_constructor.begin(), range_constructor.end());
 // 	for (unsigned long i = 0; i < iterate_through_range_constr.size(); i++) {
@@ -78,16 +78,13 @@
 int main () {
 
 	// VectorTest Vector;
-	// Vector.launch_all_tests();
+	// Vector.launch_all_values_tests();
 
 	MapTest Map;
 	Map.launch_all_tests();
-	
 
+	// std::iterator_traits<ft::vector<int>::iterator> traits;
+	// (void)traits;
 	// StackTest Stack;
 	// Stack.launch_all_tests();
-
-	// ft::vector<Test> vec;
-	// Test	a;
-	// vec.push_back(a);
 }

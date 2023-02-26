@@ -157,7 +157,7 @@ namespace ft
 
 	template< class T1, class T2 >
 	bool operator>(  ft::pair<T1,T2>& lhs,  ft::pair<T1,T2>& rhs ) {
-		
+
 		return (rhs < lhs);
 	}
 

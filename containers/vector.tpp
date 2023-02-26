@@ -402,10 +402,9 @@ namespace ft
 	/////////////////////////////////////////////
 	template <typename T, typename Alloc>
 	template <typename InputIterator>
-	void ft::vector<T, Alloc>::assign(InputIterator first, InputIterator last, typename ft::enable_if<!std::is_integral<InputIterator>::value>::type*) {
+	void ft::vector<T, Alloc>::assign(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type*) {
 		clear();
 		reserve(distance_iterator(last, first));
-
 		while (first != last)
 		{
 			push_back(*first);

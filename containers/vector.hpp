@@ -59,7 +59,7 @@ namespace ft
 
 	public:
 		//------------------Default constructor------------------//
-		explicit vector(const allocator_type &alloc = allocator_type());			
+		explicit vector(const allocator_type &alloc = allocator_type());						
 		//------------------Fill constructor(n copies of val)------------------//
 		explicit vector(size_type n, const value_type &val = value_type(), const allocator_type &alloc = allocator_type());
 		//------------------Range constructor(copy from [first:last])------------------//
@@ -172,7 +172,7 @@ namespace ft
 
 		//------------------assign------------------//
 		//range
-		template <class InputIterator> void assign(InputIterator first, InputIterator last, typename ft::enable_if<!std::is_integral<InputIterator>::value>::type* = NULL);		//fill
+		template <class InputIterator> void assign(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = NULL);		//fill
 		void assign(size_type n, const value_type &val);
 
 		//------------------push_back------------------//

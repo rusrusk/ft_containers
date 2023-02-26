@@ -543,9 +543,9 @@ class VectorTest : Test {
 			{
 				std::vector<int> result;
 				std::vector<int> vec;
-				int limit = LIMIT;
+				// int limit = LIMIT;
 				vec.assign(1000, 1);
-				vec.insert(vec.end() - 50, 420 * limit, 2);
+				vec.insert(vec.end() - 50, 42000, 2);
 				result.push_back(vec[1222]);
 				result.push_back(vec.size());
 				result.push_back(vec.capacity());
@@ -556,9 +556,9 @@ class VectorTest : Test {
 			{
 				std::vector<int> result;
 				ft::vector<int> vec;
-				int limit = LIMIT;
+				// int limit = LIMIT;
 				vec.assign(1000, 1);
-				vec.insert(vec.end() - 50, 420 * limit, 2);
+				vec.insert(vec.end() - 50, 42000, 2);
 				result.push_back(vec[1222]);
 				result.push_back(vec.size());
 				result.push_back(vec.capacity());
